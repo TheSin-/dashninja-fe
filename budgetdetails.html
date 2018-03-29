@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <!--
-This file is part of Dash Ninja.
-https://github.com/elbereth/dashninja-fe
+This file is part of TRC Ninja.
+https://github.com/terracoin/trcninja-fe
 
-Dash Ninja is free software: you can redistribute it and/or modify
+TRC Ninja is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Dash Ninja is distributed in the hope that it will be useful,
+TRC Ninja is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>DASH Ninja - Budget Details</title>
+    <title>TRC Ninja - Budget Details</title>
 
-    <link rel="icon" href="/static/dashninja-favicon.ico" />
-    <link rel="icon" type="image/png" href="/static/dashninja-favicon.png" />
+    <link rel="icon" href="/static/trcninja-favicon.ico" />
+    <link rel="icon" type="image/png" href="/static/trcninja-favicon.png" />
     <link href="/static/bootstrap-3.3.6/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/dashninja-template.css" rel="stylesheet">
+    <link href="/static/trcninja-template.css" rel="stylesheet">
     <link href="/static/datatables/datatables.min.css" rel="stylesheet">
     <link href="/static/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
@@ -48,26 +48,26 @@ along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-          <a class="navbar-brand" href="/"><img style="margin-top: -13px;" src="/static/dashninja-logo48x48.png" width="48" height="48" border="0"></a>
+          <a class="navbar-brand" href="/"><img style="margin-top: -13px;" src="/static/trcninja-logo48x48.png" width="48" height="48" border="0"></a>
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/blocks.html">Blocks Masternodes Payee</a></li>
                 <li><a href="/masternodes.html">Masternodes Monitoring</a></li>
                 <li><a href="/governance.html">Governance Monitoring</a></li>
-                <li><a name="menuitemexplorer" href="https://explorer.dashninja.pl">Block Explorer</a></li>
+                <li><a name="menuitemexplorer" href="https://insight.terracoin.io">Block Explorer</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Other Tools <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li class="dropdown-header">Official Pages</li>
-                        <li><a href="http://www.dash.org/">Dash Homepage</a></li>
-                        <li><a href="https://github.com/dashpay/dash">Dash Github Sources</a></li>
-                        <li><a href="https://www.dash.org/downloads/">Dash Binaries</a></li>
+                        <li><a href="https://terracoin.io/">Terracoin Homepage</a></li>
+                        <li><a href="https://github.com/terracoin/terracoin">Terracoin Github Sources</a></li>
+                        <li><a href="https://terracoin.io/#downloads/">Terracoin Binaries</a></li>
                         <li class="divider"></li>
                         <li class="dropdown-header">Forums / Wiki</li>
-                        <li><a href="https://dashpay.atlassian.net/wiki/">Official Dash Wiki</a></li>
-                        <li><a href="https://dash.org/forum">Official Dash Forum</a></li>
-                        <li><a href="https://bitcointalk.org/index.php?topic=421615">BitcoinTalk (BTC) - Dash ANN</a></li>
+                        <li><a href="https://wiki.terracoin.io">Official Terracoin Wiki</a></li>
+                        <li><a href="https://mattermost.terracoin.io/">Official Terracoin Mattermost</a></li>
+                        <li><a href="https://bitcointalk.org/index.php?topic=1364146.0">BitcoinTalk (BTC) - Terracoin ANN</a></li>
                     </ul>
                 </li>
             </ul>
@@ -91,9 +91,9 @@ along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
         </div>
       <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <div class="page-header">
-        <h1>DASH Ninja - Budget Details</h1>
+        <h1>TRC Ninja - Budget Details</h1>
         <p>Page is dynamically refreshed (JavaScript required). All times are in GMT/UTC.<br/>
-Versions: <i>HTML v1.2.4 / JS v<span id="dashninjajsversion">?.?.?</span></i> (hint: might need to Ctrl+F5 to update JS)</p>
+Versions: <i>HTML v1.2.4 / JS v<span id="trcninjajsversion">?.?.?</span></i> (hint: might need to Ctrl+F5 to update JS)</p>
       </div>
     <div id="testnetalert" class="alert alert-danger" style="display: none">
       <h2>THIS IS TESTNET!</h2>
@@ -103,8 +103,7 @@ Versions: <i>HTML v1.2.4 / JS v<span id="dashninjajsversion">?.?.?</span></i> (h
               <p>Go to the <a href="/governance.html">Governance Proposals Monitoring</a> page, for the new budget info.</p>
           </div>
     <div class="alert alert-info">
-<p>If this page is useful to you, spare some coin: <a href="http://chainz.cryptoid.info/dash/address.dws?Xbon36F261wXDL4p1CEZAX28t8U4ayR9uu.htm">Xbon36F261wXDL4p1CEZAX28t8U4ayR9uu</a><br>
-Brought to you by <a href="https://www.dash.org/forum/members/elbereth.175/">elberethzone</a> (<a href="https://keybase.io/elbereth/key.asc">GPG</a>).</p>
+          <p>Brought to you by the Terracoin Foundation.</p>
     </div>
 <h2>Budget information:</h2>
 <table id="budgetinfo" class="table table-striped table-condensed table-responsive text-nowrap">
@@ -202,7 +201,7 @@ Brought to you by <a href="https://www.dash.org/forum/members/elbereth.175/">elb
   </tbody>
 </table>
 <p>(Last refresh: <span id="budgetinfoLR">Never</span>)<br>
-(Using <span id="fiatDASHBTCval">???</span> BTC/DASH value from <span id="fiatDASHBTCwho">???</span> [<span id="fiatDASHBTCwhen">???</span>] and <span id="fiatUSDBTCval">???</span> USD/BTC value from <span id="fiatUSDBTCwho">???</span> [<span id="fiatUSDBTCwhen">???</span>])<br>
+(Using <span id="fiatTRCBTCval">???</span> BTC/TRC value from <span id="fiatTRCBTCwho">???</span> [<span id="fiatTRCBTCwhen">???</span>] and <span id="fiatUSDBTCval">???</span> USD/BTC value from <span id="fiatUSDBTCwho">???</span> [<span id="fiatUSDBTCwhen">???</span>])<br>
 (Also using <span id="fiatEURBTCval">???</span> EUR/BTC value from <span id="fiatEURBTCwho">???</span> [<span id="fiatEURBTCwhen">???</span>])</p>
           <hr/>
           <h2 id="get2vote">Vote for this budget:</h2>
@@ -221,21 +220,21 @@ Brought to you by <a href="https://www.dash.org/forum/members/elbereth.175/">elb
           <div id="voteyes" class="panel panel-success">
               <div class="panel-heading">Vote YES</div>
               <div class="panel-body">
-                  <p>From your masternode cold wallet (the one having your 1000 DASH vins and where the revenue arrives).</p>
-                  <p>To vote from dash-qt (graphical wallet), go to Tools > Debug console and type:</p>
+                  <p>From your masternode cold wallet (the one having your 5000 TRC vins and where the revenue arrives).</p>
+                  <p>To vote from terracoin-qt (graphical wallet), go to Tools > Debug console and type:</p>
                   <pre>mnbudget vote-many <span id="budgethash1">???</span> yes</pre>
-                  <p>To vote from dash-cli (command line, dashd must be running), type:</p>
-                  <pre>dash-cli mnbudget vote-many <span id="budgethash2">???</span> yes</pre>
+                  <p>To vote from terracoin-cli (command line, terracoind must be running), type:</p>
+                  <pre>terracoin-cli mnbudget vote-many <span id="budgethash2">???</span> yes</pre>
               </div>
           </div>
           <div id="voteno" class="panel panel-danger">
               <div class="panel-heading">Vote NO</div>
               <div class="panel-body">
-                  <p>From your masternode cold wallet (the one having your 1000 DASH vins and where the revenue arrives).</p>
-                  <p>To vote from dash-qt (graphical wallet), go to Tools > Debug console and type:</p>
+                  <p>From your masternode cold wallet (the one having your 5000 TRC vins and where the revenue arrives).</p>
+                  <p>To vote from terracoin-qt (graphical wallet), go to Tools > Debug console and type:</p>
                   <pre>mnbudget vote-many <span id="budgethash3">???</span> no</pre>
-                  <p>To vote from dash-cli (command line, dashd must be running), type:</p>
-                  <pre>dash-cli mnbudget vote-many <span id="budgethash4">???</span> no</pre>
+                  <p>To vote from terracoin-cli (command line, terracoind must be running), type:</p>
+                  <pre>terracoin-cli mnbudget vote-many <span id="budgethash4">???</span> no</pre>
               </div>
           </div>
           <hr/>
@@ -285,7 +284,7 @@ Brought to you by <a href="https://www.dash.org/forum/members/elbereth.175/">elb
 </div>
 <div id="footer">
   <div class="container">
-      <p style="font-size:small;" align=right>Brought to you by <a href="https://www.dash.org/forum/members/elbereth.175/">elberethzone</a>. If this page is useful to you, spare some coin: <a href="http://chainz.cryptoid.info/dash/address.dws?Xbon36F261wXDL4p1CEZAX28t8U4ayR9uu.htm">Xbon36F261wXDL4p1CEZAX28t8U4ayR9uu</a><br>Contact me securely via <a href="https://keybase.io/elbereth">Keybase</a>. Check source (<a href="/LICENSE">GPLv3</a>) on: <a href="https://github.com/elbereth/dashninja-fe">GitHub</a>.</p>
+      <p style="font-size:small;" align=right>Brought to you by the Terracoin Foundation.</p>
   </div>
 </div>
     <script src="/static/jquery-2.2.4.min.js"></script>
@@ -293,9 +292,9 @@ Brought to you by <a href="https://www.dash.org/forum/members/elbereth.175/">elb
     <script src="/static/highcharts.js"></script>
     <script src="/static/highcharts-more.js"></script>
     <script src="/static/datatables/datatables.min.js"></script>
-    <script src="dashninja-config.js"></script>
-    <script src="dashninja-common.js"></script>
-    <script src="dashninja-budgetdetails.js"></script>
+    <script src="trcninja-config.js"></script>
+    <script src="trcninja-common.js"></script>
+    <script src="trcninja-budgetdetails.js"></script>
   </body>
 </html>
 

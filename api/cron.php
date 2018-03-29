@@ -1,25 +1,28 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-fe
+    This file is part of TRC Ninja.
+    https://github.com/terracoin/trcninja-fe
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    TRC Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    TRC Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
-define("DASHNINJA_CRONVERSION","1");
+define("TRCNINJA_CRONVERSION","1");
+
+// Load configuration
+require_once('libs/config.inc.php');
 
 // Load configuration and connect to DB
 require_once('libs/db.inc.php');
@@ -94,11 +97,11 @@ function save_json($filenameprefix,$data,$semaphore,$testnet) {
 function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
 
     xecho("Generating full masternodes list:\n");
-    semaphore(DMN_CRON_MNFL_SEMAPHORE);
+    semaphore(TMN_CRON_MNFL_SEMAPHORE);
 
     xecho("Retrieving current protocol version: ");
 
-    $cachefnam = CACHEFOLDER.sprintf("dashninja_maxprotocol_%d",$testnet);
+    $cachefnam = CACHEFOLDER.sprintf("trcninja_maxprotocol_%d",$testnet);
     $cachevalid = (is_readable($cachefnam) && ((filemtime($cachefnam)+300)>=time()));
     if ($cachevalid) {
         $protocol = unserialize(file_get_contents($cachefnam));
@@ -119,7 +122,7 @@ function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
         else {
             echo "Failed!";
             xecho($mysqli->errno.': '.$mysqli->error."n");
-            die2(2,DMN_CRON_MNFL_SEMAPHORE);
+            die2(2,TMN_CRON_MNFL_SEMAPHORE);
         }
     }
 
@@ -127,10 +130,10 @@ function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
 
     xecho("--> Retrieve masternodes list: ");
 
-    $nodes = dmn_masternodes2_get($mysqli, $testnet, $protocol, array(), array(), array());
+    $nodes = tmn_masternodes2_get($mysqli, $testnet, $protocol, array(), array(), array());
     if (!is_array($nodes)) {
         echo "Failed!\n";
-        die2(1,DMN_CRON_MNFL_SEMAPHORE);
+        die2(1,TMN_CRON_MNFL_SEMAPHORE);
     }
     echo "OK (".count($nodes).")\n";
 
@@ -172,10 +175,10 @@ function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
 
     // Portcheck info
     xecho("--> Retrieving portcheck info: ");
-    $portcheck = dmn_masternodes_portcheck_get($mysqli, $mnipstrue, $testnet);
+    $portcheck = tmn_masternodes_portcheck_get($mysqli, $mnipstrue, $testnet);
     if ($portcheck === false) {
         echo "Failed!\n";
-        die2(1,DMN_CRON_MNFL_SEMAPHORE);
+        die2(1,TMN_CRON_MNFL_SEMAPHORE);
     }
     foreach($nodes as $key => $node) {
         if ($node["MasternodeTor"] != "") {
@@ -196,10 +199,10 @@ function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
 
     // Balance info
     xecho("--> Retrieving balance info: ");
-    $balances = dmn_masternodes_balance_get($mysqli, $mnpubkeystrue, $testnet);
+    $balances = tmn_masternodes_balance_get($mysqli, $mnpubkeystrue, $testnet);
     if ($balances === false) {
         echo "Failed!\n";
-        die2(1,DMN_CRON_MNFL_SEMAPHORE);
+        die2(1,TMN_CRON_MNFL_SEMAPHORE);
     } else {
         foreach ($nodes as $key => $node) {
             if (array_key_exists($node['MasternodePubkey'], $balances)) {
@@ -220,17 +223,17 @@ function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
                 'fromcache' => true),
             'api' => array('version' => 3,
                 'compat' => 3,
-                'bev' => 'mnfl='.DASHNINJA_BEV.'.'.DASHNINJA_CRONVERSION)
+                'bev' => 'mnfl='.TRCNINJA_BEV.'.'.TRCNINJA_CRONVERSION)
         ));
 
-    save_json("masternodeslistfull",$data,DMN_CRON_MNFL_SEMAPHORE,$testnet);
+    save_json("masternodeslistfull",$data,TMN_CRON_MNFL_SEMAPHORE,$testnet);
 
 }
 
 function generate_blocks24h_json_files($mysqli, $testnet = 0) {
 
     xecho("Generating 24 blocks list:\n");
-    semaphore(DMN_CRON_BK24_SEMAPHORE);
+    semaphore(TMN_CRON_BK24_SEMAPHORE);
 
     $interval = new DateInterval('P1D');
     $interval->invert = 1;
@@ -243,7 +246,7 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
 
     xecho("Retrieving protocol descriptions: ");
 
-    $cachefnam = CACHEFOLDER.sprintf("dashninja_protocolesc_%d",$testnet);
+    $cachefnam = CACHEFOLDER.sprintf("trcninja_protocolesc_%d",$testnet);
     $cachevalid = (is_readable($cachefnam) && ((filemtime($cachefnam)+900)>=time()));
     if ($cachevalid) {
         echo "From cache... ";
@@ -274,7 +277,7 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
         }
         else {
 
-            die2(200,DMN_CRON_BK24_SEMAPHORE);
+            die2(200,TMN_CRON_BK24_SEMAPHORE);
         }
     }
 
@@ -355,10 +358,10 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
         xecho("--> Retrieving masternodes count: ");
         $totalmninfo = 0;
         $uniquemnips = 0;
-        $mninfo = dmn_masternodes_count($mysqli,$testnet, $totalmninfo, $uniquemnips);
+        $mninfo = tmn_masternodes_count($mysqli,$testnet, $totalmninfo, $uniquemnips);
         if ($mninfo === false) {
             echo "Failed!\n";
-            die2(201,DMN_CRON_BK24_SEMAPHORE);
+            die2(201,TMN_CRON_BK24_SEMAPHORE);
         }
         echo count($mninfo)." protocols\n";
 
@@ -527,23 +530,23 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
             'api' => array(
                 'version' => 3,
                 'compat' => 1,
-                'bev' => 'bk24h='.DASHNINJA_BEV.".".DASHNINJA_CRONVERSION
+                'bev' => 'bk24h='.TRCNINJA_BEV.".".TRCNINJA_CRONVERSION
             )
         ));
-        save_json("blocks24h",$data,DMN_CRON_BK24_SEMAPHORE,$testnet);
+        save_json("blocks24h",$data,TMN_CRON_BK24_SEMAPHORE,$testnet);
 
     }
     else {
         echo "Failed!";
         xecho($mysqli->errno.': '.$mysqli->error."n");
-        die2(2,DMN_CRON_BK24_SEMAPHORE);
+        die2(2,TMN_CRON_BK24_SEMAPHORE);
     }
 }
 
 function generate_nodesstatus_json_files($mysqli, $testnet = 0) {
 
     xecho("Generating monitoring nodes status:\n");
-    semaphore(DMN_CRON_MNST_SEMAPHORE);
+    semaphore(TMN_CRON_MNST_SEMAPHORE);
 
     xecho("--> Retrieve nodes status: ");
 
@@ -559,7 +562,7 @@ function generate_nodesstatus_json_files($mysqli, $testnet = 0) {
     }
     else {
         echo "SQL error - ".$mysqli->errno.": ".$mysqli->error."\n";
-        die2(301,DMN_CRON_MNST_SEMAPHORE);
+        die2(301,TMN_CRON_MNST_SEMAPHORE);
     }
 
     echo "OK (".count($nodes).")\n";
@@ -570,20 +573,21 @@ function generate_nodesstatus_json_files($mysqli, $testnet = 0) {
                 'fromcache' => true),
             'api' => array('version' => 3,
                 'compat' => 3,
-                'bev' => 'mnst='.DASHNINJA_BEV.'.'.DASHNINJA_CRONVERSION)
+                'bev' => 'mnst='.TRCNINJA_BEV.'.'.TRCNINJA_CRONVERSION)
         ));
-    save_json("nodesstatus",$data,DMN_CRON_MNST_SEMAPHORE,$testnet);
+    save_json("nodesstatus",$data,TMN_CRON_MNST_SEMAPHORE,$testnet);
 
 }
 
 function generate_blocksconsensus_json_files($mysqli, $testnet = 0) {
 
     xecho("Generating blocks consensus status:\n");
-    semaphore(DMN_CRON_BKCS_SEMAPHORE);
+    semaphore(TMN_CRON_BKCS_SEMAPHORE);
 
     xecho("--> Retrieve blocks consensus status: ");
 
     $sql = sprintf("SELECT BlockHeight, BlockMNPayee, BlockMNRatio, Protocol, NodeName FROM `cmd_info_blocks_history2` cibh, cmd_nodes cn WHERE cibh.NodeID = cn.NodeID AND cibh.BlockTestNet = %d ORDER BY BlockHeight DESC LIMIT 160",$testnet);
+    $maxprotocol = array();
     $numblocks = 0;
     $curblock = -1;
     $bhinfo = array();
@@ -659,7 +663,7 @@ function generate_blocksconsensus_json_files($mysqli, $testnet = 0) {
     }
     else {
         echo "SQL error - ".$mysqli->errno.": ".$mysqli->error."\n";
-        die2(301,DMN_CRON_BKCS_SEMAPHORE);
+        die2(301,TMN_CRON_BKCS_SEMAPHORE);
     }
 
     $data = array('status' => 'OK',
@@ -668,32 +672,34 @@ function generate_blocksconsensus_json_files($mysqli, $testnet = 0) {
                 'fromcache' => true),
             'api' => array('version' => 3,
                 'compat' => 3,
-                'bev' => 'bkcs='.DASHNINJA_BEV.'.'.DASHNINJA_CRONVERSION)
+                'bev' => 'bkcs='.TRCNINJA_BEV.'.'.TRCNINJA_CRONVERSION)
         ));
-    save_json("blocksconsensus",$data,DMN_CRON_BKCS_SEMAPHORE,$testnet);
+    save_json("blocksconsensus",$data,TMN_CRON_BKCS_SEMAPHORE,$testnet);
 
 }
 
 function generate_governancevotelimit_json_files($mysqli, $testnet = 0) {
 
     xecho("Generating governance vote limit:\n");
-    semaphore(DMN_CRON_GOVL_SEMAPHORE);
+    semaphore(TMN_CRON_GOVL_SEMAPHORE);
 
     xecho("--> Retrieve current block: ");
     $sql = sprintf("SELECT `BlockId`, `BlockTime`, `BlockDifficulty` FROM `cmd_info_blocks` WHERE BlockTestNet = %d ORDER BY BlockId DESC LIMIT 1", $testnet);
     if ($result = $mysqli->query($sql)) {
         $currentblock = $result->fetch_assoc();
-        $currentblock["BlockId"] = intval($currentblock["BlockId"]);
-        $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
-        $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
+        if (!empty($currentblock)) {
+            $currentblock["BlockId"] = intval($currentblock["BlockId"]);
+            $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
+            $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
+        }
     } else {
         echo "SQL error - ".$mysqli->errno.": ".$mysqli->error."\n";
-        die2(301,DMN_CRON_GOVL_SEMAPHORE);
+        die2(301,TMN_CRON_GOVL_SEMAPHORE);
     }
     echo "OK (".$currentblock["BlockId"].")\n";
 
     if ($testnet == 0) {
-        $nextsuperblock = $currentblock["BlockId"] - ($currentblock["BlockId"] % 16616) + 16616;
+        $nextsuperblock = $currentblock["BlockId"] - ($currentblock["BlockId"] % 21600) + 21600;
     } else {
         $nextsuperblock = $currentblock["BlockId"] - ($currentblock["BlockId"] % 50) + 50;
     }
@@ -714,14 +720,14 @@ function generate_governancevotelimit_json_files($mysqli, $testnet = 0) {
         }
     } else {
         echo "SQL error - ".$mysqli->errno.": ".$mysqli->error."\n";
-        die2(301,DMN_CRON_GOVL_SEMAPHORE);
+        die2(301,TMN_CRON_GOVL_SEMAPHORE);
     }
     echo "OK (".$nextsuperblock.")\n";
 
     xecho("--> Computing vote limit: ");
     // Vote limit is 1662 blocks before next superblock
     $nextsuperblockid = $nextsuperblock - 1662;
-    $nextsuperblocktime = round($currentblock["BlockTime"]+((($nextsuperblock - 1662 - $currentblock["BlockId"])/553.85)*86400));
+    $nextsuperblocktime = round($currentblock["BlockTime"]+((($nextsuperblock - 1662 - $currentblock["BlockId"])/685.71)*86400));
     if ($nextsuperblockid <= $currentblock["BlockId"]) {
         $nextsuperblockid = 0;
         $nextsuperblocktime = 0;
@@ -733,7 +739,7 @@ function generate_governancevotelimit_json_files($mysqli, $testnet = 0) {
 
     $nextsuperblock = array(
         "BlockId" => $nextsuperblock,
-        "BlockTime" => round($currentblock["BlockTime"]+((($nextsuperblock - $currentblock["BlockId"])/553.85)*86400))
+        "BlockTime" => round($currentblock["BlockTime"]+((($nextsuperblock - $currentblock["BlockId"])/685.71)*86400))
     );
     echo "OK\n";
 
@@ -750,48 +756,50 @@ function generate_governancevotelimit_json_files($mysqli, $testnet = 0) {
         'api' => array(
             'version' => 1,
             'compat' => 1,
-            'bev' => 'gpvl=' . DASHNINJA_BEV . "." . DASHNINJA_CRONVERSION
+            'bev' => 'gpvl=' . TRCNINJA_BEV . "." . TRCNINJA_CRONVERSION
         )
     ));
 
-    save_json("votelimit",$data,DMN_CRON_GOVL_SEMAPHORE,$testnet);
+    save_json("votelimit",$data,TMN_CRON_GOVL_SEMAPHORE,$testnet);
 
 }
 
 function generate_governanceproposals_json_files($mysqli, $testnet = 0) {
 
     xecho("Generating governance proposals:\n");
-    semaphore(DMN_CRON_GOPR_SEMAPHORE);
+    semaphore(TMN_CRON_GOPR_SEMAPHORE);
 
     xecho("--> Retrieve current block: ");
     // Retrieve current block
     $sql = sprintf("SELECT `BlockId`, `BlockTime`, `BlockDifficulty` FROM `cmd_info_blocks` WHERE BlockTestNet = %d ORDER BY BlockId DESC LIMIT 1",$testnet);
     if ($result = $mysqli->query($sql)) {
         $currentblock = $result->fetch_assoc();
-        $currentblock["BlockId"] = intval($currentblock["BlockId"]);
-        $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
-        $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
+        if (!empty($currentblock)) {
+            $currentblock["BlockId"] = intval($currentblock["BlockId"]);
+            $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
+            $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
+        }
     }
     else {
         echo "SQL error - " . $mysqli->errno . ": " . $mysqli->error . "\n";
-        die2(301, DMN_CRON_GOPR_SEMAPHORE);
+        die2(301, TMN_CRON_GOPR_SEMAPHORE);
     }
 
     // Calculate next superblock height
-    $nSubsidy = 5;
+    $nSubsidy = 20;
     if ($testnet == 0) {
-        $nextsuperblock = $currentblock["BlockId"] - ($currentblock["BlockId"] % 16616) + 16616;
-        for ($i = 210240; $i <= $nextsuperblock; $i += 210240) $nSubsidy -= $nSubsidy / 14;
-        $estimatedbudgetamount = (($nSubsidy / 100) * 10) * (60 * 24 * 30) / 2.6;
+        $nextsuperblock = $currentblock["BlockId"] - ($currentblock["BlockId"] % 21600) + 21600;
+        for ($i = 0; $i <= $nextsuperblock; $i += 1050000) $nSubsidy -= $nSubsidy / 2;
+        $estimatedbudgetamount = ($nSubsidy * 0.10) * 21600;
     } else {
-        $nextsuperblock = $currentblock["BlockId"] - ($currentblock["BlockId"] % 50) + 50;
-        for ($i = 46200; $i <= $nextsuperblock; $i += 210240) $nSubsidy -= $nSubsidy / 14;
-        $estimatedbudgetamount = (($nSubsidy / 100) * 10) * 50;
+        $nextsuperblock = $currentblock["BlockId"] - ($currentblock["BlockId"] % 24) + 24;
+        for ($i = 0; $i <= $nextsuperblock; $i += 210240) $nSubsidy -= $nSubsidy / 2;
+        $estimatedbudgetamount = ($nSubsidy * 0.10) * 24;
     }
 
     // Calculate next superblock timestamp
-    $nextsuperblocktimestamp = round($currentblock['BlockTime']+(($nextsuperblock-$currentblock['BlockId'])/553.85)*86400);
-    echo "OK (".$currentblock["BlockId"]." / Estimated budget amount: ".$estimatedbudgetamount." DASH)\n";
+    $nextsuperblocktimestamp = round($currentblock['BlockTime']+(($nextsuperblock-$currentblock['BlockId'])/685.71)*86400);
+    echo "OK (".$currentblock["BlockId"]." / Estimated budget amount: ".$estimatedbudgetamount." TRC)\n";
 
     // Get governance proposals
     $sql = sprintf("SELECT * FROM cmd_gobject_proposals WHERE GovernanceObjectTestnet = %d",$testnet);
@@ -831,10 +839,10 @@ function generate_governanceproposals_json_files($mysqli, $testnet = 0) {
 
         $totalmninfo = 0;
         $uniquemnips = 0;
-        $mninfo = dmn_masternodes_count($mysqli, $testnet, $totalmninfo, $uniquemnips);
+        $mninfo = tmn_masternodes_count($mysqli, $testnet, $totalmninfo, $uniquemnips);
         if ($mninfo === false) {
             echo "SQL error - " . $mysqli->errno . ": " . $mysqli->error . "\n";
-            die2(301, DMN_CRON_GOPR_SEMAPHORE);
+            die2(301, TMN_CRON_GOPR_SEMAPHORE);
         }
 
         $keyst1 = "governancebudget";
@@ -856,12 +864,12 @@ function generate_governanceproposals_json_files($mysqli, $testnet = 0) {
             }
         } else {
             echo "SQL error - " . $mysqli->errno . ": " . $mysqli->error . "\n";
-            die2(301, DMN_CRON_GOPR_SEMAPHORE);
+            die2(301, TMN_CRON_GOPR_SEMAPHORE);
         }
     }
     else {
         echo "SQL error - " . $mysqli->errno . ": " . $mysqli->error . "\n";
-        die2(301, DMN_CRON_GOPR_SEMAPHORE);
+        die2(301, TMN_CRON_GOPR_SEMAPHORE);
     }
 
     $data = array('status' => 'OK',
@@ -884,30 +892,32 @@ function generate_governanceproposals_json_files($mysqli, $testnet = 0) {
         'api' => array(
             'version' => 2,
             'compat' => 1,
-            'bev' => 'gp='.DASHNINJA_BEV.".".DASHNINJA_CRONVERSION
+            'bev' => 'gp='.TRCNINJA_BEV.".".TRCNINJA_CRONVERSION
         )
         ));
 
 
-    save_json("governanceproposals",$data,DMN_CRON_GOPR_SEMAPHORE,$testnet);
+    save_json("governanceproposals",$data,TMN_CRON_GOPR_SEMAPHORE,$testnet);
 
 }
 
 function generate_governancetriggers_json_files($mysqli, $testnet = 0) {
 
     xecho("Generating governance superblock tiggers:\n");
-    semaphore(DMN_CRON_GOTR_SEMAPHORE);
+    semaphore(TMN_CRON_GOTR_SEMAPHORE);
 
     xecho("--> Retrieve current block: ");
     $sql = sprintf("SELECT `BlockId`, `BlockTime`, `BlockDifficulty` FROM `cmd_info_blocks` WHERE BlockTestNet = %d ORDER BY BlockId DESC LIMIT 1", $testnet);
     if ($result = $mysqli->query($sql)) {
         $currentblock = $result->fetch_assoc();
-        $currentblock["BlockId"] = intval($currentblock["BlockId"]);
-        $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
-        $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
+        if (!empty($currentblock)) {
+            $currentblock["BlockId"] = intval($currentblock["BlockId"]);
+            $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
+            $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
+        }
     } else {
         echo "SQL error - ".$mysqli->errno.": ".$mysqli->error."\n";
-        die2(301,DMN_CRON_GOTR_SEMAPHORE);
+        die2(301,TMN_CRON_GOTR_SEMAPHORE);
     }
     echo "OK (".$currentblock["BlockId"].")\n";
 
@@ -968,7 +978,7 @@ function generate_governancetriggers_json_files($mysqli, $testnet = 0) {
 
     } else {
         echo "SQL error - ".$mysqli->errno.": ".$mysqli->error."\n";
-        die2(301,DMN_CRON_GOTR_SEMAPHORE);
+        die2(301,TMN_CRON_GOTR_SEMAPHORE);
     }
     echo "OK (".count($triggers)." triggers)\n";
 
@@ -984,18 +994,18 @@ function generate_governancetriggers_json_files($mysqli, $testnet = 0) {
         'api' => array(
             'version' => 1,
             'compat' => 1,
-            'bev' => 'gt='.DASHNINJA_BEV.".".DASHNINJA_CRONVERSION
+            'bev' => 'gt='.TRCNINJA_BEV.".".TRCNINJA_CRONVERSION
         )
         ));
 
-    save_json("governancetriggers",$data,DMN_CRON_GOTR_SEMAPHORE,$testnet);
+    save_json("governancetriggers",$data,TMN_CRON_GOTR_SEMAPHORE,$testnet);
 
 }
 
 function generate_blockssuperblocks_json_files($mysqli, $testnet = 0) {
 
     xecho("Generating superblocks list status:\n");
-    semaphore(DMN_CRON_BKSB_SEMAPHORE);
+    semaphore(TMN_CRON_BKSB_SEMAPHORE);
 
     xecho("--> Retrieve superblocks: ");
 
@@ -1035,7 +1045,7 @@ function generate_blockssuperblocks_json_files($mysqli, $testnet = 0) {
     }
     else {
         echo "SQL error - ".$mysqli->errno.": ".$mysqli->error."\n";
-        die2(301,DMN_CRON_BKSB_SEMAPHORE);
+        die2(301,TMN_CRON_BKSB_SEMAPHORE);
     }
     echo "OK (".count($superblocks).")\n";
 
@@ -1048,17 +1058,17 @@ function generate_blockssuperblocks_json_files($mysqli, $testnet = 0) {
             'api' => array(
                 'version' => 1,
                 'compat' => 1,
-                'bev' => 'sb='.DASHNINJA_BEV.".".DASHNINJA_CRONVERSION
+                'bev' => 'sb='.TRCNINJA_BEV.".".TRCNINJA_CRONVERSION
             )
         ));
 
-    save_json("blockssuperblocks",$data,DMN_CRON_BKSB_SEMAPHORE,$testnet);
+    save_json("blockssuperblocks",$data,TMN_CRON_BKSB_SEMAPHORE,$testnet);
 
 }
 
 
 
-xecho('DASH Ninja Front-End JSON Generator cron v'.DASHNINJA_BEV.'.'.DASHNINJA_CRONVERSION."\n");
+xecho('TRC Ninja Front-End JSON Generator cron v'.TRCNINJA_BEV.'.'.TRCNINJA_CRONVERSION."\n");
 
 if ($argc != 3) {
     xecho("Usage: ".$argv[0]." main|testnet <command>\n");

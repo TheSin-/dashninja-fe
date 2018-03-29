@@ -1,42 +1,60 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-fe
+    This file is part of TRC Ninja.
+    https://github.com/terracoin/trcninja-fe
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    TRC Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    TRC Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
 // Copy this file to config.inc.php and change configuration below
 
 // Path to the cache folder (files will be created in there, best if outside www access)
-DEFINE('CACHEFOLDER',"/home/dashninja/cache/");
+DEFINE('CACHEFOLDER',"/home/trcninja/cache/");
 
 // Path to the data folder (must be accessible by the website)
-DEFINE('DATAFOLDER',"/home/dashninja/www/data/");
+DEFINE('DATAFOLDER',"/home/trcninja/www/data/");
 
 // Semaphore for the cron script of masternodefulllist
-DEFINE('DMN_CRON_MNFL_SEMAPHORE','/home/dashninja/dash-mnwww-cron-mnfl.pid');
+DEFINE('TMN_CRON_MNFL_SEMAPHORE','/home/trcninja/trc-mnwww-cron-mnfl.pid');
 
 // Semaphore for the cron script of block24h
-DEFINE('DMN_CRON_BK24_SEMAPHORE','/home/dashninja/dash-mnwww-cron-bk24.pid');
+DEFINE('TMN_CRON_BK24_SEMAPHORE','/home/trcninja/trc-mnwww-cron-bk24.pid');
 
-// Indicate here all MySQL configuration to connect to Dash Ninja Database
-DEFINE('MYSQLUSER',"dashninja-api");
+// Semaphore for the cron script of nodesstatus
+DEFINE('TMN_CRON_MNST_SEMAPHORE','/home/trcninja/trc-mnwww-cron-mnst.pid');
+
+// Semaphore for the cron script of blocksconsensus
+DEFINE('TMN_CRON_BKCS_SEMAPHORE','/home/trcninja/trc-mnwww-cron-bkcs.pid');
+
+// Semaphore for the cron script of votelimit
+DEFINE('TMN_CRON_GOVL_SEMAPHORE','/home/trcninja/trc-mnwww-cron-govl.pid');
+
+// Semaphore for the cron script of governanceproposals
+DEFINE('TMN_CRON_GOPR_SEMAPHORE','/home/trcninja/trc-mnwww-cron-gopr.pid');
+
+// Semaphore for the cron script of governancetriggers
+DEFINE('TMN_CRON_GOTR_SEMAPHORE','/home/trcninja/trc-mnwww-cron-gotr.pid');
+
+// Semaphore for the cron script of blockssuperblocks
+DEFINE('TMN_CRON_BKSB_SEMAPHORE','/home/trcninja/trc-mnwww-cron-bksb.pid');
+
+// Indicate here all MySQL configuration to connect to TRC Ninja Database
+DEFINE('MYSQLUSER',"trcninja-api");
 DEFINE('MYSQLPASS',"anyrandompassword");
-DEFINE('MYSQLDATABASE',"dashninja");
+DEFINE('MYSQLDATABASE',"trcninja");
 DEFINE('MYSQLHOST',"localhost");
 
 ?>

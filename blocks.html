@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <!--
-This file is part of Dash Ninja.
-https://github.com/elbereth/dashninja-fe
+This file is part of TRC Ninja.
+https://github.com/terracoin/trcninja-fe
 
-Dash Ninja is free software: you can redistribute it and/or modify
+TRC Ninja is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Dash Ninja is distributed in the hope that it will be useful,
+TRC Ninja is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>DASH Ninja - Blocks Masternodes Payee</title>
+    <title>TRC Ninja - Blocks Masternodes Payee</title>
 
-    <link rel="icon" href="/static/dashninja-favicon.ico" />
-    <link rel="icon" type="image/png" href="/static/dashninja-favicon.png" />
+    <link rel="icon" href="/static/trcninja-favicon.ico" />
+    <link rel="icon" type="image/png" href="/static/trcninja-favicon.png" />
     <link href="/static/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/dashninja-template-2.0.css" rel="stylesheet">
+    <link href="/static/trcninja-template-2.0.css" rel="stylesheet">
     <link href="/static/datatables/datatables.min.css" rel="stylesheet">
     <link href="/static/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
@@ -49,26 +49,26 @@ along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="/"><img style="margin-top: -13px; border-top: 0px; border-bottom: 0px; margin-right: 10px;" src="/static/dashninja-logo48x48.png" width="48" height="48" align="left"> DASH Ninja</a>
+              <a class="navbar-brand" href="/"><img style="margin-top: -13px; border-top: 0px; border-bottom: 0px; margin-right: 10px;" src="/static/trcninja-logo48x48.png" width="48" height="48" align="left"> TRC Ninja</a>
           </div>
           <div class="collapse navbar-collapse navbar-collapse" role="navigation">
               <ul class="nav navbar-nav navbar-right">
                   <li class="active"><a href="/blocks.html"><i class="fa fa-link fa-fw" aria-hidden="true"></i> Blockhain</a></li>
                   <li><a href="/masternodes.html"><i class="fa fa-server fa-fw" aria-hidden="true"></i> Masternodes</a></li>
                   <li><a href="/governance.html"><i class="fa fa-balance-scale fa-fw" aria-hidden="true"></i> Governance</a></li>
-                  <li><a name="menuitemexplorer" href="https://explorer.dashninja.pl"><i class="fa fa-search fa-fw" aria-hidden="true"></i> Explorer</a></li>
+                  <li><a name="menuitemexplorer" target="_blank" href="https://insight.terracoin.io"><i class="fa fa-search fa-fw" aria-hidden="true"></i> Explorer</a></li>
                   <li class="dropdown">
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-wrench fa-fw" aria-hidden="true"></i> Other Tools <span class="caret"></span></a>
                       <ul class="dropdown-menu" role="menu">
                           <li class="dropdown-header">Official Pages</li>
-                          <li><a href="http://www.dash.org/">Dash Homepage</a></li>
-                          <li><a href="https://github.com/dashpay/dash">Dash Github Sources</a></li>
-                          <li><a href="https://www.dash.org/downloads/">Dash Binaries</a></li>
+                          <li><a href="https://terracoin.io/">Terracoin Homepage</a></li>
+                          <li><a href="https://github.com/terracoin/terracoin">Terracoin Github Sources</a></li>
+                          <li><a href="https://terracoin.io/#downloads/">Terracoin Binaries</a></li>
                           <li class="divider"></li>
                           <li class="dropdown-header">Forums / Wiki</li>
-                          <li><a href="https://dashpay.atlassian.net/wiki/">Official Dash Wiki</a></li>
-                          <li><a href="https://dash.org/forum">Official Dash Forum</a></li>
-                          <li><a href="https://bitcointalk.org/index.php?topic=421615">BitcoinTalk (BTC) - Dash ANN</a></li>
+                          <li><a href="https://wiki.terracoin.io">Official Terracoin Wiki</a></li>
+                          <li><a href="https://mattermost.terracoin.io/">Official Terracoin Mattermost</a></li>
+                          <li><a href="https://bitcointalk.org/index.php?topic=1364146.0">BitcoinTalk (BTC) - Terracoin ANN</a></li>
                       </ul>
                   </li>
               </ul>
@@ -89,21 +89,21 @@ along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
       <div id="page-wrapper">
           <div class="row">
               <div class="col-lg-12">
-                  <h1 class="page-header"><i class="fa fa-link" aria-hidden="true"></i> Blockchain Masternodes Payee <span class="badge badge-secondary">Links: <a href="/blocks.html"><i class="fa fa-link"></i></a><span name="dashninjatordisplay" style="display: none;"> - <a name="dashninjatorurl" href="#">Tor</a></span><span name="dashninjai2pdisplay" style="display: none;"> - <a name="dashninjai2purl" href="#">I2P</a></span></span> <span class="badge badge-danger" id="testnetalert" class="alert alert-danger" style="display: none">THIS IS TESTNET!</span></h1>
+                  <h1 class="page-header"><i class="fa fa-link" aria-hidden="true"></i> Blockchain Masternodes Payee <span class="badge badge-secondary">Links: <a href="/blocks.html"><i class="fa fa-link"></i></a><span name="trcninjatordisplay" style="display: none;"> - <a name="trcninjatorurl" href="#">Tor</a></span><span name="trcninjai2pdisplay" style="display: none;"> - <a name="trcninjai2purl" href="#">I2P</a></span></span> <span class="badge badge-danger" id="testnetalert" class="alert alert-danger" style="display: none">THIS IS TESTNET!</span></h1>
               </div>
           </div>
           <div class="row">
               <div class="col-lg-4 col-md-8">
                   <div class="panel panel-info">
                       <div class="panel-heading">
-                          Dash Ninja info
+                          TRC Ninja info
                       </div>
                       <div class="panel-body">
-                          By <a class="badge badge-primary" href="https://keybase.io/elbereth/">elberethzone</a> / Time <span class="label label-info">GMT/UTC</span> / HTML <span class="label label-info">2.5.0</span> / JavaScript <span class="label label-danger" id="dashninjajsversion">required</span>
+                          Time <span class="label label-info">GMT/UTC</span> / HTML <span class="label label-info">2.5.0</span> / JavaScript <span class="label label-danger" id="trcninjajsversion">required</span>
                       </div>
                       <div class="panel-footer">
-                          <span class="pull-left">Donations:</span>
-                          <span class="pull-right"><a href="http://chainz.cryptoid.info/dash/address.dws?Xbon36F261wXDL4p1CEZAX28t8U4ayR9uu.htm">Xbon36F261wXDL4p1CEZAX28t8U4ayR9uu</a></span>
+                          <span class="pull-left"></span>
+                          <span class="pull-right"></span>
                           <div class="clearfix"></div>
                       </div>
                   </div>
@@ -111,7 +111,7 @@ along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
           </div>
           <div class="row">
         <h2>Global Statistics</h2>
-        <p>Total supply for last 24h: <span id="globalsupplyamount" style="font-weight: bold;">????.?????? DASH</span> (<span id="globalmnamount" style="font-weight: bold;">????.?????? DASH</span> for masternodes, <span id="globalpayed" style="font-weight: bold;">???%</span> blocks payed, <span id="globalcorrectlypayed" style="font-weight: bold;">???%</span> of total blocks payed correctly [<span id="globalcurrentmnratio">??</span>% and latest protocol version]).</p>
+        <p>Total supply for last 24h: <span id="globalsupplyamount" style="font-weight: bold;">????.?????? TRC</span> (<span id="globalmnamount" style="font-weight: bold;">????.?????? TRC</span> for masternodes, <span id="globalpayed" style="font-weight: bold;">???%</span> blocks payed, <span id="globalcorrectlypayed" style="font-weight: bold;">???%</span> of total blocks payed correctly [<span id="globalcurrentmnratio">??</span>% and latest protocol version]).</p>
           </div>
           <div class="row">
               <h2 id="perversion">Per Version Statistics (last 24h)</h2>
@@ -151,15 +151,15 @@ along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
  <tbody>
   <tr>
     <td style="color:#FF0000; font-weight: bold">Bold red pool name/pubkey</td>
-    <td>You need to update <u>BOTH</u>:<br/><ul><li>Your mining software to include masternode payment (it is not complex): <a href="https://dashpay.atlassian.net/wiki/display/DOC/Mining+pools">https://dashpay.atlassian.net/wiki/display/DOC/Mining+pools</a></li><li>Your dashd wallet software to latest version</li></ul>Remark: Failing to update BOTH will result in your blocks not been accepted as of next enforcement).</td>
+    <td>You need to update <u>BOTH</u>:<br/><ul><li>Your mining software to include masternode payment (it is not complex): <a href="https://wiki.terracoin.io/view/Pools">https://wiki.terracoin.io/view/Pools</a></li><li>Your terracoind wallet software to latest version</li></ul>Remark: Failing to update BOTH will result in your blocks not been accepted as of next enforcement).</td>
   </tr>
   <tr>
     <td style="background-color:#FF8f8F">Red background (<b>Payed to current protocol</b> field)</td>
-    <td>You need to update your dashd wallet software to latest version (check <a href="https://dashpay.atlassian.net/wiki/display/DOC/Mining+pools">this page</a>)</td>
+    <td>You need to update your terracoind wallet software to latest version (check <a href="https://wiki.terracoin.io/view/Pools">this page</a>)</td>
   </tr>
   <tr>
     <td style="background-color:#FFcb8f">Orange background (<b>MN Payment ratio</b> field)</td>
-    <td>You need to update your mining software to include correct masternode payment ratio (it is an easy change): Check <a href="https://dashpay.atlassian.net/wiki/display/DOC/Mining+pools">this page</a></td>
+    <td>You need to update your mining software to include correct masternode payment ratio (it is an easy change): Check <a href="https://wiki.terracoin.io/view/Pools">this page</a></td>
   </tr>
   <tr>
     <td style="background-color:#FFFF8f">Yellow background</td>
@@ -167,7 +167,7 @@ along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
   </tr>
  </tbody>
 </table>
-<p>Don't hesitate in coming to IRC Freenode #dashpay for help if needed.<br><u>REMARK:</u> Failing to implement solution described means your blocks will be rejected by the network in the near future (= no payment).</p></div>
+<p>Don't hesitate in coming to <a href="https://mattermost.terracoin.io">Mattermost</a> for help if needed.<br><u>REMARK:</u> Failing to implement solution described means your blocks will be rejected by the network in the near future (= no payment).</p></div>
 <div class="table-responsive">
 <table id="perminertable" class="table table-striped table-condensed table-responsive text-nowrap">
  <thead>
@@ -223,7 +223,7 @@ along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
 </div>
 <div id="footer">
   <div class="container">
-      <p style="font-size:small;" align=right>Brought to you by <a href="https://www.dash.org/forum/members/elbereth.175/">elberethzone</a>. If this page is useful to you, spare some coin: <a href="http://chainz.cryptoid.info/dash/address.dws?Xbon36F261wXDL4p1CEZAX28t8U4ayR9uu.htm">Xbon36F261wXDL4p1CEZAX28t8U4ayR9uu</a><br>Contact me securely via <a href="https://keybase.io/elbereth">Keybase</a>. Check source (<a href="/LICENSE">GPLv3</a>) on: <a href="https://github.com/elbereth/dashninja-fe">GitHub</a>.</p>
+      <p style="font-size:small;" align=right>Brought to you by the Terracoin Foundation.</p>
   </div>
 </div>
       </div>
@@ -233,8 +233,8 @@ along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
     <script src="/static/highcharts.js"></script>
     <script src="/static/highcharts-more.js"></script>
     <script src="/static/datatables/datatables.min.js"></script>
-    <script src="dashninja-config.js"></script>
-    <script src="dashninja-common.js"></script>
-    <script src="dashninja-blocks.js"></script>
+    <script src="trcninja-config.js"></script>
+    <script src="trcninja-common.js"></script>
+    <script src="trcninja-blocks.js"></script>
   </body>
 </html>
