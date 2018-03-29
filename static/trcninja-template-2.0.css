@@ -425,3 +425,57 @@ table.dataTable thead .sorting:after {
 .badge-secondary a:visited { 
    color: #efefef;
 }
+
+/* TRC Colours */
+
+a {
+   color: #0e8843;
+}
+
+a:focus, a:hover {
+   color: #1e6638;
+}
+
+.pagination>li>a, .pagination>li>span {
+   color: #0e8843;
+}
+
+.pagination>li>a:focus, .pagination>li>a:hover, .pagination>li>span:focus, .pagination>li>span:hover {
+   color: #1e6638;
+}
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    background-color: #0e8843;
+    border-color: #1e6638;
+}
+
+.panel-primary {
+    border-color: #1e6638;
+}
+
+.panel-primary>.panel-heading {
+    background-color: #0e8843;
+    border-color: #1e6638;
+}
+
+.label-primary {
+    background-color: #0e8843;
+}
+
+.panel-info {
+    border-color: #7da783;
+}
+
+.panel-info>.panel-heading {
+    color: #333;
+    background-color: #a5ddad;
+    border-color: #7da783;
+}
+
+.label-info {
+    background-color: #a5ddad;
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    white-space: normal;
+}
