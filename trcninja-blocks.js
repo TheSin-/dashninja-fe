@@ -267,7 +267,7 @@ $(document).ready(function(){
             $('td',row).eq(6).css({"text-align": "right"});
             var color = '';
             if ( Math.round( data.RatioMNPayments * 100) == Math.round( data.RatioMNPaymentsExpected * 100) ) {
-              color = '#8fff8f';
+              color = '#a5ddad';
             }
             else if ( data.RatioMNPayments > 0.11 ) {
               color = '#ffff8f';
@@ -280,7 +280,7 @@ $(document).ready(function(){
             }
             $('td',row).eq(7).css({"text-align": "right", "background-color": color});
             if ( data.RatioBlocksPayedToCurrentProtocol == 1 ) {
-              color = '#8fff8f';
+              color = '#a5ddad';
             }
             else if ( data.RatioBlocksPayedToCurrentProtocol > 0 ) {
               color = '#ffff8f';
@@ -290,7 +290,7 @@ $(document).ready(function(){
             }
             $('td',row).eq(8).css({"text-align": "right", "background-color": color});
             if ( data.RatioBlocksPayedCorrectly == 1 ) {
-              color = '#8fff8f';
+              color = '#a5ddad';
             }
             else if ( data.RatioBlocksPayedCorrectly > 0 ) {
               color = '#ffff8f';
