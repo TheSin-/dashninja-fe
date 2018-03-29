@@ -476,10 +476,6 @@ a:focus, a:hover {
     background-color: #a5ddad;
 }
 
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-    white-space: normal;
-}
-
 /* bootstrap hack: fix content width inside hidden tabs */
 .tab-content > .tab-pane:not(.active),
 .pill-content > .pill-pane:not(.active) {
