@@ -291,7 +291,7 @@ $(document).ready(function(){
             $('td',row).eq(0).css({"text-align": "center"});
             var totalvotesratio = (data.Yeas-data.Nays)/totalmns;
             var isalloted = false;
-            var color = '#8FFF8F';
+            var color = '#a5ddad';
             if (totalvotesratio < 0.1) {
                 color = '#FF8F8F';
             }
@@ -304,7 +304,7 @@ $(document).ready(function(){
                 isalloted = true;
             }
             else {
-                color = '#8FFF8F';
+                color = '#a5ddad';
                 isalloted = true;
             }
             $('td',row).eq(16).css({"background-color":color,"text-align": "right"});
@@ -313,7 +313,7 @@ $(document).ready(function(){
             }
             else {
                 if (isalloted) {
-                    color = '#8FFF8F';
+                    color = '#a5ddad';
                 }
                 else {
                     if (data.IsEstablished) {
@@ -334,7 +334,7 @@ $(document).ready(function(){
             if (data.BlockStart == superblock.blockheight) {
                 color = '#FFFF8F';
             } else if (data.BlockStart > superblock.blockheight) {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             $('td',row).eq(4).css({"background-color":color,"text-align": "right"});
             $('td',row).eq(5).css({"text-align": "center"});
@@ -353,18 +353,18 @@ $(document).ready(function(){
                 color = '#FFFF8F';
             }
             else {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             $('td',row).eq(15).css({"background-color":color,"text-align": "right"});
             if (data.IsEstablished) {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             else {
                 color = '#FF8F8F';
             }
             $('td',row).eq(17).css({"background-color":color,"text-align": "center"});
             if (data.IsValid) {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             else {
                 color = '#FF8F8F';
@@ -544,14 +544,14 @@ $(document).ready(function(){
             if (data.BlockStart == superblock2.blockheight) {
                 color = '#FFFF8F';
             } else if (data.BlockStart > superblock2.blockheight) {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             if ((currenttimestamp() - data.LastReported) > 3600) {
                 color = '#FF8F8F';
             }
             else {
                 if (data.IsValid) {
-                    color = '#8FFF8F';
+                    color = '#a5ddad';
                 }
                 else {
                     color = '#ffff8f';
@@ -577,7 +577,7 @@ $(document).ready(function(){
                 color = '#FFFF8F';
             }
             else {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             $('td',row).eq(16).css({"background-color":color,"text-align": "right"});
             var totalvotesratio = (data.Yeas-data.Nays)/totalmns2;
@@ -591,11 +591,11 @@ $(document).ready(function(){
                 color = '#FFFF8F';
             }
             else {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             $('td',row).eq(17).css({"background-color":color,"text-align": "right"});
             if (data.IsValid) {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             else {
                 color = '#FF8F8F';

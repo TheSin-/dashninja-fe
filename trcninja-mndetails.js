@@ -292,13 +292,13 @@ function mndetailsRefresh(useVin){
         ],
         createdRow: function ( row, data, index ) {
           if (data.BlockMNPayeeExpected == mnpubkey) {
-            $('td',row).eq(5).css({"background-color": "#8FFF8F"});
+            $('td',row).eq(5).css({"background-color": "#a5ddad"});
           }
           else {
             $('td',row).eq(5).css({"background-color": "#FF8F8F"});
           }
           if (data.BlockMNPayee == mnpubkey) {
-            $('td',row).eq(6).css({"background-color": "#8FFF8F"});
+            $('td',row).eq(6).css({"background-color": "#a5ddad"});
           }
           else {
             $('td',row).eq(6).css({"background-color": "#FF8F8F"});

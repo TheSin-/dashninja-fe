@@ -158,7 +158,7 @@ $(document).ready(function(){
             $('td',row).eq(4).css({"text-align": "right"});
             $('td',row).eq(5).css({"text-align": "right"});
             if (data.ProtocolDesc == dataProtocolDesc[maxProtocol]) {
-              var color = '#8FFF8F';
+              var color = '#a5ddad';
               if (data.RatioBlocksPayedCorrectRatio < 0.25) {
                 color = '#FF8F8F';
               } else if (data.RatioBlocksPayedCorrectRatio < 0.5) {
@@ -429,7 +429,7 @@ $(document).ready(function(){
         ],
         createdRow: function ( row, data, index ) {
             if (data.BlockVersion == 0x20000002) {
-                $('td',row).eq(1).css({"background-color": "#8FFF8F"});
+                $('td',row).eq(1).css({"background-color": "#a5ddad"});
             }
             else {
                 $('td',row).eq(1).css({"background-color": ''});
@@ -449,8 +449,8 @@ $(document).ready(function(){
           }
           else {
             if (Math.round(data.BlockMNValueRatio*1000) == Math.round(data.BlockMNValueRatioExpected*1000)) {
-              $('td',row).eq(5).css({"background-color": "#8FFF8F"});
-              $('td',row).eq(6).css({"background-color": "#8FFF8F"});
+              $('td',row).eq(5).css({"background-color": "#a5ddad"});
+              $('td',row).eq(6).css({"background-color": "#a5ddad"});
             }
             else if ((data.BlockMNValueRatio == 0.1) || (data.BlockMNValueRatio == 0.2)) {
               $('td',row).eq(5).css({"background-color": "#FFFF8F"});
@@ -461,7 +461,7 @@ $(document).ready(function(){
               $('td',row).eq(6).css({"background-color": "#ffcb8f"});
             }
             if (data.BlockMNProtocol == maxProtocol) {
-              $('td',row).eq(8).css({"background-color": "#8FFF8F"});
+              $('td',row).eq(8).css({"background-color": "#a5ddad"});
             }
             else if (data.BlockMNProtocol < 70102) {
               $('td',row).eq(8).css({"background-color": "#FFCB8F"});

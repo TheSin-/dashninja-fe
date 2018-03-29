@@ -400,7 +400,7 @@ $(document).ready(function() {
         ],
         "createdRow": function (row, data, index) {
             if (data.Consensus == 1) {
-                $('td', row).eq(1).css({"background-color": "#8FFF8F"});
+                $('td', row).eq(1).css({"background-color": "#a5ddad"});
             } else {
                 $('td', row).eq(1).css({"background-color": "#FF8F8F"});
             }
@@ -710,13 +710,13 @@ $(document).ready(function() {
             }
             else {
                 if (( data.Portcheck.Result == 'open' ) || ( data.Portcheck.Result == 'rogue' )) {
-                    color = '#8FFF8F';
+                    color = '#a5ddad';
                 } else if (data.Portcheck.Result == 'unknown') {
                     color = '#8F8F8F';
                 }
             }
             $('td',row).eq(3).css({"background-color":color,"text-align": "center"});
-            color = '#8FFF8F';
+            color = '#a5ddad';
             if ( data.Balance.Value < 1000 ) {
                 color = '#FF8F8F';
             }
@@ -734,7 +734,7 @@ $(document).ready(function() {
                 color = '#FF8F8F';
             }
             else if ( versioninfo == trcversioncheck ) {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             else {
                 color = '#FFFF8F';
@@ -745,7 +745,7 @@ $(document).ready(function() {
                 color = '#FF8F8F';
             }
             else if ( curprotocol == trcmaxprotocol ) {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             }
             else {
                 color = '#FFFF8F';
@@ -758,7 +758,7 @@ $(document).ready(function() {
             var total = activecount+inactivecount+unlistedcount;
             var ratio = activecount / total;
             if (ratio == 1) {
-                color = '#8FFF8F';
+                color = '#a5ddad';
             } else if (ratio == 0) {
                 color = '#FF8F8F';
             } else if (ratio < 0.5) {
