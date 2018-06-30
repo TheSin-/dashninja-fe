@@ -121,12 +121,12 @@ $(document).ready(function(){
         $('#globalestablishedbudget').text(json.data.stats.funded);
         $('#globalestablishedbudgetamount').text(addCommas(Math.round(totalamount*100)/100)+' '+trcninjacoin[trcninjatestnet]);
         var cls = "panel-red";
-        if ((json.data.stats.nextsuperblock.blockheight-1662)<=json.data.stats.latestblock.BlockId) {
+        if ((json.data.stats.nextsuperblock.blockheight-2057)<=json.data.stats.latestblock.BlockId) {
             $('#globalnextvotelimitdate').text( "Current month vote is over!" );
             $('#globalnextvotelimitremaining').text("Too late...");
         }
         else {
-            var nextvotelimitdatetimestamp = json.data.stats.latestblock.BlockTime+(((json.data.stats.nextsuperblock.blockheight-1662-json.data.stats.latestblock.BlockId)/685.71)*86400);
+            var nextvotelimitdatetimestamp = json.data.stats.latestblock.BlockTime+(((json.data.stats.nextsuperblock.blockheight-2057-json.data.stats.latestblock.BlockId)/685.71)*86400);
             var datevotelimit = new Date(nextvotelimitdatetimestamp*1000);
             $('#globalnextvotelimitdate').text(datevotelimit.toLocaleString());
             $('#globalnextvotelimitremaining').text(deltaTimeStampHRlong(nextvotelimitdatetimestamp,currenttimestamp()));

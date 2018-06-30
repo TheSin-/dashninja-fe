@@ -725,9 +725,9 @@ function generate_governancevotelimit_json_files($mysqli, $testnet = 0) {
     echo "OK (".$nextsuperblock.")\n";
 
     xecho("--> Computing vote limit: ");
-    // Vote limit is 1662 blocks before next superblock
-    $nextsuperblockid = $nextsuperblock - 1662;
-    $nextsuperblocktime = round($currentblock["BlockTime"]+((($nextsuperblock - 1662 - $currentblock["BlockId"])/685.71)*86400));
+    // Vote limit is 2057 blocks before next superblock
+    $nextsuperblockid = $nextsuperblock - 2057;
+    $nextsuperblocktime = round($currentblock["BlockTime"]+((($nextsuperblock - 2057 - $currentblock["BlockId"])/685.71)*86400));
     if ($nextsuperblockid <= $currentblock["BlockId"]) {
         $nextsuperblockid = 0;
         $nextsuperblocktime = 0;
