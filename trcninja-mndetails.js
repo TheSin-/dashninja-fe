@@ -216,8 +216,8 @@ function mndetailsRefresh(useVin){
       $('#mnportchecknext').text(deltaTimeStampHRlong(data.data[0].Portcheck.NextCheck,currenttimestamp()));
     }
     var versioninfo = '<i>Unknown</i>';
-    var patt = /^\/.*:([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*\/$/;
     if ((data.data[0].hasOwnProperty("Portcheck")) && (data.data[0].Portcheck != false)) {
+      var patt = /^\/.*:([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*\/$/;
       if (patt.test(data.data[0].Portcheck.SubVer)) {
         var match = patt.exec(data.data[0].Portcheck.SubVer);
         versioninfo = match[0];
