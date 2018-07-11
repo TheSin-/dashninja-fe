@@ -216,10 +216,15 @@ function mndetailsRefresh(useVin){
       $('#mnportchecknext').text(deltaTimeStampHRlong(data.data[0].Portcheck.NextCheck,currenttimestamp()));
     }
     var versioninfo = '<i>Unknown</i>';
+    var patt = /^\/.*:([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*\/$/;
     if ((data.data[0].hasOwnProperty("Portcheck")) && (data.data[0].Portcheck != false)) {
-        if ((data.data[0].Portcheck.SubVer.length > 11) && (data.data[0].Portcheck.SubVer.substring(0, 16) == '/Terracoin Core:') && (data.data[0].Portcheck.SubVer.substring(data.data[0].Portcheck.SubVer.length - 1) == '/')) {
-            versioninfo = data.data[0].Portcheck.SubVer.substring(11, data.data[0].Portcheck.SubVer.indexOf('/', 11));
-        }
+      if (patt.test(data.data[0].Portcheck.SubVer)) {
+        var match = patt.exec(data.data[0].Portcheck.SubVer);
+        versioninfo = match[0];
+      }
+      else if ((data.data[0].Portcheck.SubVer.length > 11) && (data.data[0].Portcheck.SubVer.substring(0, 16) == '/Terracoin Core:') && (data.data[0].Portcheck.SubVer.substring(data.data[0].Portcheck.SubVer.length - 1) == '/')) {
+        versioninfo = data.data[0].Portcheck.SubVer.substring(11, data.data[0].Portcheck.SubVer.indexOf('/', 11));
+      }
     }
     else {
         versioninfo = "Unknown";
