@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--
+This file is part of TRC Ninja.
+https://github.com/terracoin/trcninja-fe
+
+TRC Ninja is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+TRC Ninja is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TRC Ninja - Blocks Masternodes Payee</title>
+
+    <link rel="icon" href="/static/trcninja-favicon.ico" />
+    <link rel="icon" type="image/png" href="/static/trcninja-favicon.png" />
+    <link href="/static/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/trcninja-template-2.0.css" rel="stylesheet">
+    <link href="/static/datatables/datatables.min.css" rel="stylesheet">
+    <link href="/static/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="/static/html5shiv.min.js"></script>
+      <script src="/static/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+  <body>
+
+  <div id="wrapper">
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/"><img style="margin-top: -13px; border-top: 0px; border-bottom: 0px; margin-right: 10px;" src="/static/trcninja-logo48x48.png" width="48" height="48" align="left"> TRC Ninja</a>
+      </div>
+      <div class="collapse navbar-collapse navbar-collapse" role="navigation">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/blocks.html"><i class="fa fa-link fa-fw" aria-hidden="true"></i> Blockchain</a></li>
+          <li><a href="/masternodes.html"><i class="fa fa-server fa-fw" aria-hidden="true"></i> Masternodes</a></li>
+          <li><a href="/governance.html"><i class="fa fa-balance-scale fa-fw" aria-hidden="true"></i> Governance</a></li>
+          <li class="active"><a href="/explorer.html"><i class="fa fa-search fa-fw" aria-hidden="true"></i> Explorer</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-wrench fa-fw" aria-hidden="true"></i> Other Tools <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li class="dropdown-header">Official Pages</li>
+              <li><a target="_blank" href="https://terracoin.io/">Terracoin Homepage</a></li>
+              <li><a target="_blank" href="https://github.com/terracoin/terracoin">Terracoin Github Sources</a></li>
+              <li><a target="_blank" href="https://terracoin.io/#downloads/">Terracoin Binaries</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Forums / Wiki</li>
+              <li><a target="_blank" href="https://wiki.terracoin.io">Official Terracoin Wiki</a></li>
+              <li><a target="_blank" href="https://mattermost.terracoin.io/">Official Terracoin Mattermost</a></li>
+              <li><a target="_blank" href="https://bitcointalk.org/index.php?topic=1364146.0">BitcoinTalk (BTC) - Terracoin ANN</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <!--/.nav-collapse -->
+      <div class="navbar-default sidebar" role="navigation">
+        <div class="nav-sidebar sidebar-nav">
+          <ul class="nav" id="side-menu">
+            <li><a href="#" onclick="loadExplorer('abe');">ABE</a></li>
+            <li><a href="#" onclick="loadExplorer('insight');">Insight</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div id="page-wrapper">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="page-header"><i class="fa fa-search" aria-hidden="true"></i> Terracoin Explorer <span class="badge badge-secondary">Links: <a href="/explorer.html"><i class="fa fa-link"></i></a><span name="trcninjatordisplay" style="display: none;"> - <a name="trcninjatorurl" href="#">Tor</a></span><span name="trcninjai2pdisplay" style="display: none;"> - <a name="trcninjai2purl" href="#">I2P</a></span></span> <span class="badge badge-danger" id="testnetalert" class="alert alert-danger" style="display: none">THIS IS TESTNET!</span></h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4 col-md-8">
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              TRC Ninja info
+            </div>
+            <div class="panel-body">
+              Time <span class="label label-info">GMT/UTC</span> / HTML <span class="label label-info">2.5.0</span> / JavaScript <span class="label label-danger" id="trcninjajsversion">required</span>
+            </div>
+            <div class="panel-footer">
+              <span class="pull-left"></span>
+              <span class="pull-right"></span>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <iframe id="explorer" src="about:blank" width="100%" height="100%" frameborder="0" scrolling="auto"></iframe>
+      <hr/>
+      </div>
+      <div id="footer">
+        <div class="container">
+          <p style="font-size:small;" align=right>Brought to you by the Terracoin Foundation.</p>
+        </div>
+      </div>
+    </div>
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <script src="/static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="/static/highcharts.js"></script>
+    <script src="/static/highcharts-more.js"></script>
+    <script src="/static/datatables/datatables.min.js"></script>
+    <script src="trcninja-config.js"></script>
+    <script src="trcninja-common.js"></script>
+    <script src="trcninja-blocks.js"></script>
+    <script type="text/javascript">
+function loadExplorer(type) {
+	var url = "https://explorer.terracoin.io";
+	if (type == 'insight')
+		url = "https://insight.terracoin.io";
+
+	$('#explorer').attr('src', url);
+}
+
+$(document).ready(function() {
+	loadExplorer('abe');
+});
+    </script>
+  </body>
+</html>
