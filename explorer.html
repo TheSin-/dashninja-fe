@@ -108,7 +108,7 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
         </div>
       </div>
       <div class="row">
-        <iframe id="explorer" src="about:blank" width="100%" height="100%" frameborder="0" scrolling="auto"></iframe>
+        <iframe id="explorer" src="about:blank" style="width: 100%; height: 100%;" frameborder="0" scrolling="auto"></iframe>
       <hr/>
       </div>
       <div id="footer">
@@ -127,9 +127,9 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
     <script src="trcninja-blocks.js"></script>
     <script type="text/javascript">
 function loadExplorer(type) {
-	var url = "https://explorer.terracoin.io";
+	var url = "https://explorer.terracoin.io/chain/Terracoin";
 	if (type == 'insight')
-		url = "https://insight.terracoin.io";
+		url = "https://insight.terracoin.io/";
 
 	$('#explorer').attr('src', url);
 }
