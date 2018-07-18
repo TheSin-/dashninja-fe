@@ -222,8 +222,8 @@ function mndetailsRefresh(useVin){
         var match = patt.exec(data.data[0].Portcheck.SubVer);
         versioninfo = match[1];
       }
-      else if ((data.data[0].Portcheck.SubVer.length > 11) && (data.data[0].Portcheck.SubVer.substring(0, 16) == '/Terracoin Core:') && (data.data[0].Portcheck.SubVer.substring(data.data[0].Portcheck.SubVer.length - 1) == '/')) {
-        versioninfo = data.data[0].Portcheck.SubVer.substring(11, data.data[0].Portcheck.SubVer.indexOf('/', 11));
+      else if ((data.data[0].Portcheck.SubVer.length > 16) && (data.data[0].Portcheck.SubVer.substring(0, 16) == '/Terracoin Core:') && (data.data[0].Portcheck.SubVer.substring(data.data[0].Portcheck.SubVer.length - 1) == '/')) {
+        versioninfo = data.data[0].Portcheck.SubVer.substring(16, data.data[0].Portcheck.SubVer.indexOf('/', 16));
       }
     }
     else {

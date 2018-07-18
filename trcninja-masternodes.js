@@ -473,8 +473,8 @@ $(document).ready(function() {
                     var match = patt.exec(json.data.masternodes[i].Portcheck.SubVer);
                     versioninfo = match[1];
                 }
-                else if ((json.data.masternodes[i].Portcheck.SubVer.length > 11) && (json.data.masternodes[i].Portcheck.SubVer.substring(0,16) == '/Terracoin Core:') && (json.data.masternodes[i].Portcheck.SubVer.substring(json.data.masternodes[i].Portcheck.SubVer.length-1) == '/')) {
-                    versioninfo = json.data.masternodes[i].Portcheck.SubVer.substring(11,json.data.masternodes[i].Portcheck.SubVer.indexOf('/',11));
+                else if ((json.data.masternodes[i].Portcheck.SubVer.length > 16) && (json.data.masternodes[i].Portcheck.SubVer.substring(0,16) == '/Terracoin Core:') && (json.data.masternodes[i].Portcheck.SubVer.substring(json.data.masternodes[i].Portcheck.SubVer.length-1) == '/')) {
+                    versioninfo = json.data.masternodes[i].Portcheck.SubVer.substring(16,json.data.masternodes[i].Portcheck.SubVer.indexOf('/',16));
                 }
                 else {
                     versioninfo = "Unknown";
@@ -628,8 +628,8 @@ $(document).ready(function() {
                         var match = patt.exec(data.Portcheck.SubVer);
                         versioninfo = match[1];
                     }
-                    else if ((data.Portcheck.SubVer.length > 11) && (data.Portcheck.SubVer.substring(0,16) == '/Terracoin Core:') && (data.Portcheck.SubVer.substring(data.Portcheck.SubVer.length-1) == '/')) {
-                        versioninfo = data.Portcheck.SubVer.substring(11,data.Portcheck.SubVer.indexOf('/',11));
+                    else if ((data.Portcheck.SubVer.length > 16) && (data.Portcheck.SubVer.substring(0,16) == '/Terracoin Core:') && (data.Portcheck.SubVer.substring(data.Portcheck.SubVer.length-1) == '/')) {
+                        versioninfo = data.Portcheck.SubVer.substring(16,data.Portcheck.SubVer.indexOf('/',16));
                     }
                 }
                 return versioninfo;
@@ -738,8 +738,8 @@ $(document).ready(function() {
                     var match = patt.exec(data.Portcheck.SubVer);
                     versioninfo = match[1];
                 }
-                else if ((data.Portcheck.SubVer.length > 11) && (data.Portcheck.SubVer.substring(0, 16) == '/Terracoin Core:') && (data.Portcheck.SubVer.substring(data.Portcheck.SubVer.length - 1) == '/')) {
-                    versioninfo = data.Portcheck.SubVer.substring(11, data.Portcheck.SubVer.indexOf('/', 11));
+                else if ((data.Portcheck.SubVer.length > 16) && (data.Portcheck.SubVer.substring(0, 16) == '/Terracoin Core:') && (data.Portcheck.SubVer.substring(data.Portcheck.SubVer.length - 1) == '/')) {
+                    versioninfo = data.Portcheck.SubVer.substring(16, data.Portcheck.SubVer.indexOf('/', 16));
                 }
             }
             if ( versioninfo == "Unknown" ) {
