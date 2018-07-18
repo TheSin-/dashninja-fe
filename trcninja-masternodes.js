@@ -25,7 +25,7 @@ var tableLocalNodes = null;
 var tableBlockConsensus = null;
 var tableMNList = null;
 var chartMNVersions = null;
-var trcversiondefault = "0.12.1.8";
+var trcversiondefault = "0.12.1.5";
 var trcversion = trcversiondefault;
 var trcversioncheck = trcversion;
 var trcversionsemaphore = false;
@@ -745,7 +745,7 @@ $(document).ready(function() {
             if ( versioninfo == "Unknown" ) {
                 color = '#8F8F8F';
             }
-            else if ( ( versioninfo.substring(0,5) == "0.10." ) || ( versioninfo.substring(0,7) == "0.11." ) ) {
+            else if ( ( versioninfo.substring(0,5) == "0.10." ) || ( versioninfo.substring(0,5) == "0.11." || versioninfo == "0.12.2.3") ) {
                 color = '#FF8F8F';
             }
             else if ( versioninfo == trcversioncheck ) {

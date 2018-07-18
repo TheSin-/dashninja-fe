@@ -25,7 +25,7 @@ var tableLocalNodes = null;
 var tableBlockConsensus = null;
 var tableMNList = null;
 var chartMNVersions = null;
-var trcversiondefault = "0.12.1.8";
+var trcversiondefault = "0.12.1.5";
 var trcversion = trcversiondefault;
 var trcversionsemaphore = false;
 
