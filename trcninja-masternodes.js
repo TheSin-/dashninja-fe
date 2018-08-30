@@ -32,6 +32,7 @@ var trcversionsemaphore = false;
 var sentinelversiondefault = "1.0";
 var sentinelversion = sentinelversiondefault;
 var trcmaxprotocol = 0;
+var trcminprotocol = 70208;
 
 $.fn.dataTable.ext.errMode = 'throw';
 
@@ -745,7 +746,7 @@ $(document).ready(function() {
             if ( versioninfo == "Unknown" ) {
                 color = '#8F8F8F';
             }
-            else if ( ( versioninfo.substring(0,5) == "0.10." ) || ( versioninfo.substring(0,5) == "0.11." ) || ( versioninfo == "0.12.1.5" ) || ( versioninfo == "0.12.1.6" ) || ( versioninfo == "0.12.2.3" ) ) {
+            else if ( ( versioninfo.substring(0,5) == "0.10." ) || ( versioninfo.substring(0,5) == "0.11." ) || ( versioninfo == "0.12.1." ) || ( versioninfo == "0.12.2.3" ) ) {
                 color = '#FF8F8F';
             }
             else if ( versioninfo == trcversioncheck ) {
@@ -756,7 +757,7 @@ $(document).ready(function() {
             }
             $('td',row).eq(4).css({"background-color":color});
             var curprotocol = parseInt(data.MasternodeProtocol);
-            if ( curprotocol < 70102 ) {
+            if ( curprotocol < trcminprotocol ) {
                 color = '#FF8F8F';
             }
             else if ( curprotocol == trcmaxprotocol ) {

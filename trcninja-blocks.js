@@ -26,6 +26,7 @@ var tablePerVersion = null;
 var tablePerMiner = null;
 var dataProtocolDesc = [];
 var maxProtocol = -1;
+var trcminprotocol = 70208;
 
 $.fn.dataTable.ext.errMode = 'throw';
 
@@ -463,7 +464,7 @@ $(document).ready(function(){
             if (data.BlockMNProtocol == maxProtocol) {
               $('td',row).eq(8).css({"background-color": "#a5ddad"});
             }
-            else if (data.BlockMNProtocol < 70102) {
+            else if (data.BlockMNProtocol < trcminprotocol) {
               $('td',row).eq(8).css({"background-color": "#FFCB8F"});
             }
             else {
