@@ -746,7 +746,7 @@ $(document).ready(function() {
             if ( versioninfo == "Unknown" ) {
                 color = '#8F8F8F';
             }
-            else if ( ( versioninfo.substring(0,5) == "0.10." ) || ( versioninfo.substring(0,5) == "0.11." ) || ( versioninfo == "0.12.1." ) || ( versioninfo == "0.12.2.3" ) ) {
+            else if ( ( versioninfo.substring(0,5) == "0.10." ) || ( versioninfo.substring(0,5) == "0.11." ) || ( versioninfo.substring(0,7) == "0.12.1." ) || ( versioninfo == "0.12.2.3" ) ) {
                 color = '#FF8F8F';
             }
             else if ( versioninfo == trcversioncheck ) {
