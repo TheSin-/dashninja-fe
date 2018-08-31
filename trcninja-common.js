@@ -17,6 +17,12 @@
 
  */
 
+function getBaseVersion(ver) {
+  var auxpow_version = (1 << 8);
+
+  return ver % auxpow_version;
+}
+
 function diffHR(diff) {
 
   var s = Math.floor( diff % 60 );
