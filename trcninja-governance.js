@@ -20,7 +20,7 @@
 // TRC Ninja Front-End (trcninja-fe) - Governance
 // By elberethzone / https://www.dash.org/forum/members/elbereth.175/
 
-var trcninjaversion = '1.6.0';
+var trcninjaversion = '1.6.3';
 var tableGovernance = null;
 var tableBudgetsProjection = null;
 var tableSuperBlocks = null;
@@ -36,13 +36,21 @@ var arrayMonthlyPayments = [];
 
 $.fn.dataTable.ext.errMode = 'throw';
 
-if (typeof trcninjatestnet === 'undefined') {
-    var trcninjatestnet = 0;
-}
+var trcninjatestnet = 0;
+
 if (typeof trcninjatestnethost !== 'undefined') {
     if (window.location.hostname == trcninjatestnethost) {
         trcninjatestnet = 1;
-        $('a[name=menuitemexplorer]').attr("href", "https://"+trcninjatestnetexplorer);
+    }
+}
+if (typeof trcninjatestnettor !== 'undefined') {
+    if (window.location.hostname == trcninjatestnettor) {
+        trcninjatestnet = 1;
+    }
+}
+if (typeof trcninjatestneti2p !== 'undefined') {
+    if (window.location.hostname == trcninjatestneti2p) {
+        trcninjatestnet = 1;
     }
 }
 
@@ -93,15 +101,27 @@ $(document).ready(function(){
 
     if (trcninjatestnet == 1) {
         $('#testnetalert').show();
-    }
+        $('a[name=menuitemexplorer]').attr("href", "https://" + trcninjatestnetexplorer);
+        if (typeof trcninjatestnettor !== 'undefined') {
+            $('a[name=trcninjatorurl]').attr("href", "http://"+trcninjatestnettor+"/governance.html");
+            $('span[name=trcninjatordisplay]').show();
+        }
 
-    if (typeof trcninjator !== 'undefined') {
-        $('a[name=trcninjatorurl]').attr("href", "http://"+trcninjator+"/governance.html");
-        $('span[name=trcninjatordisplay]').show();
+        if (typeof trcninjatestneti2p !== 'undefined') {
+            $('a[name=trcninjai2purl]').attr("href", "http://" + trcninjatestneti2p + "/governance.html");
+            $('span[name=trcninjai2pdisplay]').show();
+        }
     }
-    if (typeof trcninjai2p !== 'undefined') {
-        $('a[name=trcninjai2purl]').attr("href", "http://" + trcninjai2p + "/governance.html");
-        $('span[name=trcninjai2pdisplay]').show();
+    else {
+        if (typeof trcninjator !== 'undefined') {
+            $('a[name=trcninjatorurl]').attr("href", "http://"+trcninjator+"/governance.html");
+            $('span[name=trcninjatordisplay]').show();
+        }
+
+        if (typeof trcninjai2p !== 'undefined') {
+            $('a[name=trcninjai2purl]').attr("href", "http://" + trcninjai2p + "/governance.html");
+            $('span[name=trcninjai2pdisplay]').show();
+        }
     }
 
     $('#proposalsdetailtable').on('xhr.dt', function ( e, settings, json ) {
@@ -111,7 +131,7 @@ $(document).ready(function(){
          // Calculate the established project total amounts
          var totalamount = 0.0;
          for (var bix in json.data.governanceproposals){
-             if ((json.data.governanceproposals[bix].CachedFunding) && (json.data.governanceproposals[bix].EpochEnd > currenttimestamp()) && (json.data.governanceproposals[bix].EpochStart <= nextsuperblockdatetimestamp) && ((currenttimestamp() - json.data.governanceproposals[bix].LastReported) <= 3600)) {
+             if ((json.data.governanceproposals[bix].FundedSB) && (json.data.governanceproposals[bix].EpochEnd > currenttimestamp()) && (json.data.governanceproposals[bix].EpochStart <= nextsuperblockdatetimestamp) && ((currenttimestamp() - json.data.governanceproposals[bix].LastReported) <= 3600)) {
                  totalamount+=json.data.governanceproposals[bix].PaymentAmount;
              }
          }
@@ -163,7 +183,8 @@ $(document).ready(function(){
             tableSuperBlocksExpected = $('#superblocksexpectedtable').dataTable({
                 ajax: {
                     url: "/data/governancetriggers-" + trcninjatestnet + ".json",
-                    dataSrc: 'data.governancetriggers'
+                    dataSrc: 'data.governancetriggers',
+                    cache: true
                 },
                 paging: false,
                 order: [[0, "desc"]],
@@ -219,7 +240,8 @@ $(document).ready(function(){
     } );
     tableGovernance = $('#proposalsdetailtable').dataTable( {
         ajax: { url: "/data/governanceproposals-"+trcninjatestnet+".json",
-            dataSrc: 'data.governanceproposals' },
+            dataSrc: 'data.governanceproposals',
+            cache: true },
         paging: true,
         lengthMenu: [ [20, 50, 100, 200, -1], [20, 50, 100, 200, "All"] ],
         pageLength: 20,
@@ -283,7 +305,7 @@ $(document).ready(function(){
                 }
             } },
             { data: null, render: function ( data, type, row ) {
-                if (data.CachedFunding) {
+                if (data.FundedSB) {
                     return "Yes";
                 }
                 else {
@@ -339,7 +361,7 @@ $(document).ready(function(){
                 cls = 'danger';
             }
             $('td', row).eq(9).removeClass("success").removeClass("warning").removeClass("danger").addClass(cls).css({"text-align": "center"});
-            if (data.CachedFunding) {
+            if (data.FundedSB) {
                 cls = 'success';
             }
             else {
@@ -472,7 +494,8 @@ $(document).ready(function(){
     } );
     tableSuperBlocks = $('#superblockstable').dataTable( {
         ajax: { url: "/data/blockssuperblocks-"+trcninjatestnet+".json",
-            dataSrc: 'data.superblocks' },
+            dataSrc: 'data.superblocks',
+            cache: true },
         paging: true,
         lengthMenu: [ [20, 50, 100, 200, -1], [20, 50, 100, 200, "All"] ],
         pageLength: 20,

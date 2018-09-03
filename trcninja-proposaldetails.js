@@ -20,7 +20,7 @@
 // TRC Ninja Front-End (trcninja-fe) - Proposal Details
 // By elberethzone / https://www.dash.org/forum/members/elbereth.175/
 
-var trcninjaversion = '1.0.1';
+var trcninjaversion = '1.5.2';
 var tableVotes = null;
 var tableSuperBlocks = null;
 var trcoutputregexp = /^[a-z0-9]{64}$/;
@@ -34,14 +34,22 @@ var currentstats = null;
 
 $.fn.dataTable.ext.errMode = 'throw';
 
-if (typeof trcninjatestnet === 'undefined') {
-  var trcninjatestnet = 0;
-}
+var trcninjatestnet = 0;
+
 if (typeof trcninjatestnethost !== 'undefined') {
-  if (window.location.hostname == trcninjatestnethost) {
-    trcninjatestnet = 1;
-    $('a[name=menuitemexplorer]').attr("href", "https://"+trcninjatestnetexplorer);
-  }
+    if (window.location.hostname == trcninjatestnethost) {
+        trcninjatestnet = 1;
+    }
+}
+if (typeof trcninjatestnettor !== 'undefined') {
+    if (window.location.hostname == trcninjatestnettor) {
+        trcninjatestnet = 1;
+    }
+}
+if (typeof trcninjatestneti2p !== 'undefined') {
+    if (window.location.hostname == trcninjatestneti2p) {
+        trcninjatestnet = 1;
+    }
 }
 
 if (typeof trcninjacoin === 'undefined') {
@@ -99,9 +107,7 @@ function budgetdetailsRefresh(useHash){
   }
     console.log("DEBUG: REST query="+query);
   $.getJSON( query, function( data ) {
-   var date = new Date();
-   var n = date.toDateString();
-   var time = date.toLocaleTimeString();
+   var date = new Date(data.data.cache.time*1000);
    var result = "";
 
    console.log("DEBUG: REST api /budgets query responded!");
@@ -185,8 +191,8 @@ function budgetdetailsRefresh(useHash){
                monthsleft = 1;
            }
        }
-       $('#budgetmonthlyamount').html( addCommas( data.data.governanceproposals[0].PaymentAmount.toFixed(3) )+' '+trcninjacoin[trcninjatestnet] + ' (<span id="budgetmonthlyamountusd">???</span> USD) (<span id="budgetmonthlyamounteur">???</span> EUR)');
-       $('#budgettotalamount').html( addCommas( (data.data.governanceproposals[0].PaymentAmount*monthsleft).toFixed(3) )+' '+trcninjacoin[trcninjatestnet] + ' (<span id="budgettotalamountusd">???</span> USD) (<span id="budgettotalamounteur">???</span> EUR)' );
+       $('#budgetmonthlyamount').html( addCommas( data.data.governanceproposals[0].PaymentAmount.toFixed(3) )+' '+trcninjacoin[trcninjatestnet]);
+       $('#budgettotalamount').html( addCommas( (data.data.governanceproposals[0].PaymentAmount*monthsleft).toFixed(3) )+' '+trcninjacoin[trcninjatestnet]);
        $('#budgettotalpayments').html( '<i class="fa fa-spinner fa-pulse"></i>' );
        $('#budgetremainingpayments').text( monthsleft );
        $('#budgetyes').text( data.data.governanceproposals[0].Yes );
@@ -251,9 +257,7 @@ function budgetdetailsRefresh(useHash){
            cls = "danger";
            $('#voteisover').show();
            $('#voteisover2').hide();
-           $('#voteyes').hide();
-           $('#voteno').hide();
-           $('#voteabstain').hide();
+           $('#voteisrunning').hide();
        }
        else {
            if (data.data.governanceproposals[0].BlockchainValidity) {
@@ -271,9 +275,7 @@ function budgetdetailsRefresh(useHash){
 
            $('#voteisover').hide();
            $('#voteisover2').hide();
-           $('#voteyes').show();
-           $('#voteno').show();
-           $('#voteabstain').show();
+           $('#voteisrunning').show();
        }
        $('#budgetstatus').html(result).removeClass("danger").removeClass("success").removeClass("warning").addClass(cls);;
 
@@ -284,7 +286,8 @@ function budgetdetailsRefresh(useHash){
            tableVotes = $('#votestable').dataTable({
                ajax: {
                    url: '/api/governanceproposals/votes?testnet=' + trcninjatestnet + '&proposalhash=' + encodeURIComponent(currentbudget.Hash),
-                   dataSrc: 'data.governanceproposalvotes'
+                   dataSrc: 'data.governanceproposalvotes',
+                   cache: true
                },
                lengthMenu: [[50, 100, 250, 500, -1], [50, 100, 250, 500, "All"]],
                pageLength: 50,
@@ -411,7 +414,8 @@ function budgetdetailsRefresh(useHash){
        }
   }
 
-   $('#budgetinfoLR').text( date.toLocaleString() );
+      $('#budgetinfoLR').text( date.toLocaleString() );
+      $('#budgetinfoLRHR').text( deltaTimeStampHR(data.data.cache.time,currenttimestamp()) );
       refreshFiatValues();
       if (checkBP) {
           refreshBudgetProjection(useHash);
@@ -492,8 +496,8 @@ function refreshFiatValues() {
                 var valBTC = currentbudget.PaymentAmount * parseFloat(data.data.tablevars.btctrc.StatValue);
                 var valUSD = valBTC * parseFloat(data.data.tablevars.usdbtc.StatValue);
                 var valEUR = valBTC * parseFloat(data.data.tablevars.eurobtc.StatValue);
-                $('#budgetmonthlyamountusd').text( addCommas(valUSD.toFixed(2)) );
-                $('#budgetmonthlyamounteur').text( addCommas(valEUR.toFixed(2)) );
+                $('#budgetmonthlyamountusd').text( addCommas(valUSD.toFixed(2))+ ' USD' );
+                $('#budgetmonthlyamounteur').text( addCommas(valEUR.toFixed(2))+ ' EUR' );
 
                 var nextsuperblockdatetimestamp = currentstats.latestblock.BlockTime+(((currentstats.nextsuperblock.blockheight-currentstats.latestblock.BlockId)/686)*86400);
                 var monthsleft = Math.round (( currentbudget.EpochEnd - Math.max(currentbudget.EpochStart,nextsuperblockdatetimestamp)) / 2592000);
@@ -509,8 +513,8 @@ function refreshFiatValues() {
                 valBTC = currentbudget.PaymentAmount*monthsleft * parseFloat(data.data.tablevars.btctrc.StatValue);
                 valUSD = valBTC * parseFloat(data.data.tablevars.usdbtc.StatValue);
                 valEUR = valBTC * parseFloat(data.data.tablevars.eurobtc.StatValue);
-                $('#budgettotalamountusd').text( addCommas(valUSD.toFixed(2)) );
-                $('#budgettotalamounteur').text( addCommas(valEUR.toFixed(2)) );
+                $('#budgettotalamountusd').text( addCommas(valUSD.toFixed(2))+ ' USD' );
+                $('#budgettotalamounteur').text( addCommas(valEUR.toFixed(2))+ ' EUR' );
 
             }
         });
@@ -520,10 +524,11 @@ function refreshFiatValues() {
 
 $(document).ready(function(){
 
-  $('#trcninjajsversion').text( trcninjaversion );
+  $('#trcninjajsversion').text( trcninjaversion ).addClass("label-info").removeClass("label-danger");;
 
   if (trcninjatestnet == 1) {
       $('#testnetalert').show();
+      $('a[name=menuitemexplorer]').attr("href", "https://"+trcninjatestnetexplorer);
   }
 
   proposalname = getParameter("proposalname");
@@ -560,8 +565,9 @@ $(document).ready(function(){
 
   $('#votestable').on('xhr.dt', function ( e, settings, json ) {
         // Change the last refresh date
-        var date = new Date();
-        $('#votestableLR').text( date.toLocaleString() );
+        var date = new Date(json.data.cache.time*1000);
+      $('#votestableLR').text( date.toLocaleString() );
+      $('#votestableLRHR').text( deltaTimeStampHR(json.data.cache.time,currenttimestamp()) );
       } );
 
     $('#superblockstable').on('xhr.dt', function ( e, settings, json ) {
@@ -577,7 +583,8 @@ $(document).ready(function(){
                 latestblock = json.data.superblocks[blockid];
             }
         }
-        $('#budgettotalpayments').text( numblocks+" - "+totalamount.toFixed(3)+' '+trcninjacoin[trcninjatestnet] );
+        $('#budgettotalpayments').text( numblocks );
+        $('#budgettotalpaymentstrc').text( totalamount.toFixed(3)+' '+trcninjacoin[trcninjatestnet] );
 
         var nextsuperblockdatetimestamp = currentstats.latestblock.BlockTime+(((currentstats.nextsuperblock.blockheight-currentstats.latestblock.BlockId)/686)*86400);
         var monthsleft = Math.round (( currentbudget.EpochEnd - Math.max(currentbudget.EpochStart,nextsuperblockdatetimestamp)) / 2592000);
@@ -591,12 +598,14 @@ $(document).ready(function(){
             }
         }
         var outtxt = monthsleft;
+        var outtxt2 = '';
+        var outtxt3 = '';
         var cls = "danger";
 
         if (monthsleft > 0) {
-            outtxt += " - ";
             if ((currenttimestamp() - currentbudget.LastReported) > 3600) {
-                outtxt += "Won't get future payments (unlisted)";
+                outtxt2 += "No future payment";
+                outtxt3 += "(Unlisted)";
             }
             else {
                 var mnLimit = Math.floor(currentstats.totalmns * 0.1);
@@ -612,28 +621,27 @@ $(document).ready(function(){
                     blockheightshow += howmany+(686*30);
                 }
                 var datesuperblock = new Date(nextsuperblockdatetimestamp * 1000);
-                if (curPositive > mnLimit) {
-                    outtxt += "Next payment at super-block ";
+                if (curPositive <= mnLimit) {
+                    outtxt2 += "Possible at block ";
                 }
                 else {
-                    outtxt += "Next possible super-block ";
+                    outtxt2 += "Block ";
                 }
-                outtxt += blockheightshow + " (est. " + datesuperblock.toLocaleString() + ", " + deltaTimeStampHRlong(nextsuperblockdatetimestamp, currenttimestamp()) + " from now)";
+                outtxt2 += blockheightshow;
+                outtxt3 += datesuperblock.toLocaleString();
                 $('#voteisover').hide();
                 $('#voteisover2').hide();
-                $('#voteyes').show();
-                $('#voteno').show();
-                $('#voteabstain').show();
+                $('#voteisrunning').show();
             }
         }
         else {
             $('#voteisover').hide();
             $('#voteisover2').show();
-            $('#voteyes').hide();
-            $('#voteno').hide();
-            $('#voteabstain').hide();
+            $('#voteisrunning').hide();
         }
         $('#budgetremainingpayments').text( outtxt );
+        $('#budgetremainingpaymentsnext').text( outtxt2 );
+        $('#budgetremainingpaymentsdate').text( outtxt3 );
 
         outtxt = "";
         cls = "danger";
@@ -653,8 +661,9 @@ $(document).ready(function(){
         $('#budgetlastpaid2').html( outtxt );
 
         // Change the last refresh date
-        var date = new Date();
+        var date = new Date(json.data.cache.time*1000);
         $('#superblockstableLR').text( date.toLocaleString() );
+        $('#superblockstableLRHR').text( deltaTimeStampHR(json.data.cache.time,currenttimestamp()) );
     } );
 
 });

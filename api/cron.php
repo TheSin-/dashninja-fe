@@ -19,7 +19,7 @@
 
  */
 
-define("TRCNINJA_CRONVERSION","1");
+define("TRCNINJA_CRONVERSION","3");
 
 // Load configuration
 require_once('libs/config.inc.php');
@@ -130,12 +130,20 @@ function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
 
     xecho("--> Retrieve masternodes list: ");
 
-    $nodes = tmn_masternodes2_get($mysqli, $testnet, $protocol, array(), array(), array());
+    $cachevalid = false;
+    $nodes = tmn_masternodes2_get($mysqli, $testnet, $protocol, array(), array(), array(), $cachevalid, false);
     if (!is_array($nodes)) {
         echo "Failed!\n";
         die2(1,TMN_CRON_MNFL_SEMAPHORE);
     }
-    echo "OK (".count($nodes).")\n";
+    echo "OK";
+    if ($cachevalid) {
+        echo " [CACHED] ";
+    }
+    else {
+        echo " [DATABASE] ";
+    }
+    echo "(".count($nodes).")\n";
 
     // Generate the final list of IP:port (resulting from the query)
     xecho("--> Generating IP and pubkey list: ");
@@ -175,7 +183,8 @@ function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
 
     // Portcheck info
     xecho("--> Retrieving portcheck info: ");
-    $portcheck = tmn_masternodes_portcheck_get($mysqli, $mnipstrue, $testnet);
+    $cachevalid = false;
+    $portcheck = tmn_masternodes_portcheck_get($mysqli, $mnipstrue, $testnet,$cachevalid, false);
     if ($portcheck === false) {
         echo "Failed!\n";
         die2(1,TMN_CRON_MNFL_SEMAPHORE);
@@ -195,11 +204,19 @@ function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
             $nodes[$key]['Portcheck'] = false;
         }
     }
-    echo "OK (".count($portcheck)." IP:ports)\n";
+    echo "OK";
+    if ($cachevalid) {
+        echo " [CACHED] ";
+    }
+    else {
+        echo " [DATABASE] ";
+    }
+    echo "(".count($portcheck)." IP:ports)\n";
 
     // Balance info
     xecho("--> Retrieving balance info: ");
-    $balances = tmn_masternodes_balance_get($mysqli, $mnpubkeystrue, $testnet);
+    $cachevalid = false;
+    $balances = tmn_masternodes_balance_get($mysqli, $mnpubkeystrue, $testnet, $cachevalid,false);
     if ($balances === false) {
         echo "Failed!\n";
         die2(1,TMN_CRON_MNFL_SEMAPHORE);
@@ -215,7 +232,14 @@ function generate_masternodeslistfull_json_files($mysqli, $testnet = 0) {
             }
         }
     }
-    echo "OK (".count($balances)." entries)\n";
+    echo "OK";
+    if ($cachevalid) {
+        echo " [CACHED] ";
+    }
+    else {
+        echo " [DATABASE] ";
+    }
+    echo "(".count($balances)." entries)\n";
 
     $data = array('status' => 'OK',
         'data' => array('masternodes' => $nodes,
@@ -313,7 +337,7 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
                     "BlockMNPayed" => intval($row["BlockMNPayed"]),
                     "BlockPoolPubKey" => $row["BlockPoolPubKey"],
                     "PoolDescription" => $row["PoolDescription"],
-                    "BlockMNProtocol" => $row["BlockMNProtocol"],
+                    "BlockMNProtocol" => intval($row["BlockMNProtocol"]),
                     "BlockTime" => intval($row["BlockTime"]),
                     "BlockDifficulty" => floatval($row["BlockDifficulty"]),
                     "BlockMNPayeeExpected" => $row["BlockMNPayeeExpected"],
@@ -368,6 +392,7 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
         xecho("--> Calculating per version and per miner stats: ");
         $perversion = array();
         $perminer = array();
+        $protocoldesc = array();
         foreach($blocks as $block) {
             if (!is_null($block['PoolDescription'])) {
                 $minerkey = $block['PoolDescription'];
@@ -407,22 +432,23 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
                 $perminer[$minerkey]['MasternodeAmount'] += $block['BlockMNValue'];
                 $perminer[$minerkey]['BlocksPayed'] += $block['BlockMNPayed'];
             }
-            if (!array_key_exists($block['BlockMNProtocol'],$perversion)) {
+            if (!array_key_exists($block['BlockMNProtocol'],$protocoldesc)) {
+                if (array_key_exists($block['BlockMNProtocol'], $protocols)) {
+                    $protocoldesc[$block['BlockMNProtocol']] = $protocols[$block['BlockMNProtocol']];
+                } else {
+                    $protocoldesc[$block['BlockMNProtocol']] = $protocols[0] ;
+                }
+            }
+            if (!array_key_exists($block['BlockVersion'],$perversion)) {
                 if (array_key_exists($block['BlockMNProtocol'],$mninfo)) {
                     $mncount = $mninfo[$block['BlockMNProtocol']]['ActiveMasternodesCount'];
-                    $mnuniqueips = $mninfo[$block['BlockMNProtocol']]['UniqueActiveMasternodesIPs'];
+                    $mnuniqueips = $mninfo[$block['BlockMNProtocol']]['ActiveMasternodesUniqueIPs'];
                 }
                 else {
                     $mncount = 0;
                     $mnuniqueips = 0;
                 }
-                if (array_key_exists($block['BlockMNProtocol'],$protocols)) {
-                    $protocoldesc = $protocols[$block['BlockMNProtocol']];
-                }
-                else {
-                    $protocoldesc = $protocols[0];
-                }
-                $perversion[$block['BlockMNProtocol']] = array('ProtocolDesc' => $protocoldesc,
+                $perversion[$block['BlockVersion']] = array('BlockVersionDesc' => '0x'.dechex($block['BlockVersion']),
                         'Blocks' => 0,
                         'BlocksPayed' => 0,
                         'Amount' => 0.0,
@@ -432,18 +458,19 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
                         'MasternodesUniqueIPs' => $mnuniqueips,
                         'EstimatedMNDailyEarnings' => 0.0);
             }
-            $perversion[$block['BlockMNProtocol']]['Blocks']++;
-            $perversion[$block['BlockMNProtocol']]['Amount'] += $block['BlockMNValue'];
-            $perversion[$block['BlockMNProtocol']]['BlocksPayed'] += $block['BlockMNPayed'];
+            $perversion[$block['BlockProtocol']]['Blocks']++;
+            $perversion[$block['BlockProtocol']]['Amount'] += $block['BlockMNValue'];
+            $perversion[$block['BlockProtocol']]['BlocksPayed'] += $block['BlockMNPayed'];
             if (round($block['BlockMNValueRatio'],3) == round($block['BlockMNValueRatioExpected'],3)) {
-                $perversion[$block['BlockMNProtocol']]['BlocksPayedCorrectRatio']++;
+                $perversion[$block['BlockProtocol']]['BlocksPayedCorrectRatio']++;
                 $correctpayment = true;
             }
             elseif ($block['BlockMNValueRatio'] > 0) {
-                $perversion[$block['BlockMNProtocol']]['BlocksPayedIncorrectRatio']++;
+                $perversion[$block['BlockProtocol']]['BlocksPayedIncorrectRatio']++;
                 $correctpayment = false;
             }
-            if ($block['BlockMNProtocol'] == $maxprotocol) {
+            //if ($block['BlockMNProtocol'] == $maxprotocol) {
+            if ($block['BlockVersion'] == 0x20000004) {
                 $perminer[$minerkey]['BlocksPayedToCurrentProtocol'] += $block['BlockMNPayed'];
                 if ($correctpayment) {
                     $perminer[$minerkey]['BlocksPayedCorrectly']++;
@@ -477,7 +504,8 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
                 'BlocksPayedToCurrentProtocol' => 0,
                 'BlocksPayedCorrectly' => 0,
                 'SupplyAmount' => 0.0,
-                'MNPaymentsAmount' => 0.0);
+                'MNPaymentsAmount' => 0.0,
+                'MaxProtocol' => intval($maxprotocol));
         foreach($perminer as $miner => $info) {
             $divamount = ($perminer[$miner]['TotalAmount']-$perminer[$miner]['BudgetAmount']-$perminer[$miner]['SuperBlockPoolAmount']);
             if ($divamount == 0) {
@@ -521,15 +549,16 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
                         'data' => array('blocks' => $blocks,
             'stats' => array('perversion' => $perversion,
                 'perminer' => $perminer,
-                'global' => $globalstats
+                'global' => $globalstats,
+                'protocoldesc' => $protocoldesc
             ),
             'cache' => array(
                 'time' => time(),
                 'fromcache' => true
             ),
             'api' => array(
-                'version' => 3,
-                'compat' => 1,
+                'version' => 4,
+                'compat' => 4,
                 'bev' => 'bk24h='.TRCNINJA_BEV.".".TRCNINJA_CRONVERSION
             )
         ));
@@ -587,7 +616,6 @@ function generate_blocksconsensus_json_files($mysqli, $testnet = 0) {
     xecho("--> Retrieve blocks consensus status: ");
 
     $sql = sprintf("SELECT BlockHeight, BlockMNPayee, BlockMNRatio, Protocol, NodeName FROM `cmd_info_blocks_history2` cibh, cmd_nodes cn WHERE cibh.NodeID = cn.NodeID AND cibh.BlockTestNet = %d ORDER BY BlockHeight DESC LIMIT 160",$testnet);
-    $maxprotocol = array();
     $numblocks = 0;
     $curblock = -1;
     $bhinfo = array();
@@ -687,11 +715,9 @@ function generate_governancevotelimit_json_files($mysqli, $testnet = 0) {
     $sql = sprintf("SELECT `BlockId`, `BlockTime`, `BlockDifficulty` FROM `cmd_info_blocks` WHERE BlockTestNet = %d ORDER BY BlockId DESC LIMIT 1", $testnet);
     if ($result = $mysqli->query($sql)) {
         $currentblock = $result->fetch_assoc();
-        if (!empty($currentblock)) {
-            $currentblock["BlockId"] = intval($currentblock["BlockId"]);
-            $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
-            $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
-        }
+        $currentblock["BlockId"] = intval($currentblock["BlockId"]);
+        $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
+        $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
     } else {
         echo "SQL error - ".$mysqli->errno.": ".$mysqli->error."\n";
         die2(301,TMN_CRON_GOVL_SEMAPHORE);
@@ -764,6 +790,19 @@ function generate_governancevotelimit_json_files($mysqli, $testnet = 0) {
 
 }
 
+function cmpproposals($a, $b)
+{
+    if ($a["AbsoluteYes"] == $b["AbsoluteYes"]) {
+        if ($a["Yes"] == $b["Yes"]) {
+            return 0;
+        }
+        else {
+            return ($a["Yes"] > $b["Yes"]) ? -1 : 1;
+        }
+    }
+    return ($a["AbsoluteYes"] > $b["AbsoluteYes"]) ? -1 : 1;
+}
+
 function generate_governanceproposals_json_files($mysqli, $testnet = 0) {
 
     xecho("Generating governance proposals:\n");
@@ -774,11 +813,9 @@ function generate_governanceproposals_json_files($mysqli, $testnet = 0) {
     $sql = sprintf("SELECT `BlockId`, `BlockTime`, `BlockDifficulty` FROM `cmd_info_blocks` WHERE BlockTestNet = %d ORDER BY BlockId DESC LIMIT 1",$testnet);
     if ($result = $mysqli->query($sql)) {
         $currentblock = $result->fetch_assoc();
-        if (!empty($currentblock)) {
-            $currentblock["BlockId"] = intval($currentblock["BlockId"]);
-            $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
-            $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
-        }
+        $currentblock["BlockId"] = intval($currentblock["BlockId"]);
+        $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
+        $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
     }
     else {
         echo "SQL error - " . $mysqli->errno . ": " . $mysqli->error . "\n";
@@ -832,10 +869,9 @@ function generate_governanceproposals_json_files($mysqli, $testnet = 0) {
                 "LastReported" => strtotime($row["LastReported"])
             );
             $proposalsvalid += intval($row["GovernanceObjectBlockchainValidity"]);
-            if (($row['GovernanceObjectEpochStart'] <= $nextsuperblocktimestamp) && ($row['GovernanceObjectEpochEnd'] > time())) {
-                $proposalsfunded += intval($row["GovernanceObjectCachedFunding"]);
-            }
         }
+
+        usort($proposals,"cmpproposals");
 
         $totalmninfo = 0;
         $uniquemnips = 0;
@@ -870,6 +906,16 @@ function generate_governanceproposals_json_files($mysqli, $testnet = 0) {
     else {
         echo "SQL error - " . $mysqli->errno . ": " . $mysqli->error . "\n";
         die2(301, TMN_CRON_GOPR_SEMAPHORE);
+    }
+
+    $budgetleft = $estimatedbudgetamount;
+    foreach($proposals as $proposalkey => $proposal) {
+        $proposals[$proposalkey]["FundedSB"] = (($proposal['EpochStart'] <= $nextsuperblocktimestamp) && ($proposal['EpochEnd'] > time()) && ($proposal["EpochEnd"] >= $nextsuperblocktimestamp)
+            && ($proposal["PaymentAmount"] <= $budgetleft) && ($proposal["CachedFunding"]));
+        if ($proposals[$proposalkey]["FundedSB"]) {
+            $proposalsfunded++;
+            $budgetleft -= $proposal["PaymentAmount"];
+        }
     }
 
     $data = array('status' => 'OK',
@@ -910,11 +956,9 @@ function generate_governancetriggers_json_files($mysqli, $testnet = 0) {
     $sql = sprintf("SELECT `BlockId`, `BlockTime`, `BlockDifficulty` FROM `cmd_info_blocks` WHERE BlockTestNet = %d ORDER BY BlockId DESC LIMIT 1", $testnet);
     if ($result = $mysqli->query($sql)) {
         $currentblock = $result->fetch_assoc();
-        if (!empty($currentblock)) {
-            $currentblock["BlockId"] = intval($currentblock["BlockId"]);
-            $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
-            $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
-        }
+        $currentblock["BlockId"] = intval($currentblock["BlockId"]);
+        $currentblock["BlockTime"] = intval($currentblock["BlockTime"]);
+        $currentblock["BlockDifficulty"] = floatval($currentblock["BlockDifficulty"]);
     } else {
         echo "SQL error - ".$mysqli->errno.": ".$mysqli->error."\n";
         die2(301,TMN_CRON_GOTR_SEMAPHORE);

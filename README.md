@@ -1,7 +1,7 @@
 # TRC Ninja Front-End (trcninja-fe)
 Based on Dash Ninja By Alexandre (aka elbereth) Devilliers
 
-Check the running live website at https://overview.terracoin.io
+Check the running live website at [https://overview.terracoin.io]
 
 This is part of what makes the TRC Ninja monitoring application.
 It contains:

@@ -20,7 +20,7 @@
 // TRC Ninja Front-End (trcninja-fe) - Budget Details
 // By elberethzone / https://dashtalk.org/members/elbereth.175/
 
-var trcninjaversion = '1.2.3';
+var trcninjaversion = '1.2.4';
 var tableVotes = null;
 var tableSuperBlocks = null;
 var trcoutputregexp = /^[a-z0-9]{64}-[0-9]+$/;
@@ -40,8 +40,24 @@ if (typeof trcninjatestnet === 'undefined') {
 if (typeof trcninjatestnethost !== 'undefined') {
   if (window.location.hostname == trcninjatestnethost) {
     trcninjatestnet = 1;
-    $('a[name=menuitemexplorer]').attr("href", "https://"+trcninjatestnetexplorer);
   }
+}
+
+var trcninjatestnet = 0;
+ if (typeof trcninjatestnethost !== 'undefined') {
+    if (window.location.hostname == trcninjatestnethost) {
+        trcninjatestnet = 1;
+    }
+}
+if (typeof trcninjatestnettor !== 'undefined') {
+    if (window.location.hostname == trcninjatestnettor) {
+        trcninjatestnet = 1;
+    }
+}
+if (typeof trcninjatestneti2p !== 'undefined') {
+    if (window.location.hostname == trcninjatestneti2p) {
+        trcninjatestnet = 1;
+    }
 }
 
 if (typeof trcninjacoin === 'undefined') {
@@ -515,6 +531,7 @@ $(document).ready(function(){
   $('#trcninjajsversion').text( trcninjaversion );
 
   if (trcninjatestnet == 1) {
+      $('a[name=menuitemexplorer]').attr("href", "https://"+trcninjatestnetexplorer);
       $('#testnetalert').show();
   }
 

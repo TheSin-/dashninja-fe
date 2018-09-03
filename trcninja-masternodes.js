@@ -20,16 +20,16 @@
 // TRC Ninja Front-End (trcninja-fe) - Masternode List (v2)
 // By elberethzone / https://www.dash.org/forum/members/elbereth.175/
 
-var trcninjaversion = '2.5.2';
+var trcninjaversion = '2.5.7';
 var tableLocalNodes = null;
 var tableBlockConsensus = null;
 var tableMNList = null;
 var chartMNVersions = null;
-var trcversiondefault = "0.12.1.5";
+var trcversiondefault = "0.12.2.4";
 var trcversion = trcversiondefault;
 var trcversioncheck = trcversion;
 var trcversionsemaphore = false;
-var sentinelversiondefault = "1.0";
+var sentinelversiondefault = "1.1.0";
 var sentinelversion = sentinelversiondefault;
 var trcmaxprotocol = 0;
 var trcminprotocol = 70208;
@@ -42,13 +42,21 @@ if(typeof(Storage) !== "undefined") {
     }
 }
 
-if (typeof trcninjatestnet === 'undefined') {
-    var trcninjatestnet = 0;
-}
+var trcninjatestnet = 0;
+
 if (typeof trcninjatestnethost !== 'undefined') {
     if (window.location.hostname == trcninjatestnethost) {
         trcninjatestnet = 1;
-        $('a[name=menuitemexplorer]').attr("href", "https://"+trcninjatestnetexplorer);
+    }
+}
+if (typeof trcninjatestnettor !== 'undefined') {
+    if (window.location.hostname == trcninjatestnettor) {
+        trcninjatestnet = 1;
+    }
+}
+if (typeof trcninjatestneti2p !== 'undefined') {
+    if (window.location.hostname == trcninjatestneti2p) {
+        trcninjatestnet = 1;
     }
 }
 
@@ -209,16 +217,28 @@ $(document).ready(function() {
 
     if (trcninjatestnet == 1) {
         $('#testnetalert').show();
-    }
+        $('#testnettitle').show();
+        $('a[name=menuitemexplorer]').attr("href", "https://" + trcninjatestnetexplorer);
+        if (typeof trcninjatestnettor !== 'undefined') {
+            $('a[name=trcninjatorurl]').attr("href", "http://" + trcninjatestnettor + "/masternodes.html");
+            $('span[name=trcninjatordisplay]').show();
+        }
 
-    if (typeof trcninjator !== 'undefined') {
-        $('a[name=trcninjatorurl]').attr("href", "http://" + trcninjator + "/masternodes.html");
-        $('span[name=trcninjatordisplay]').show();
+        if (typeof trcninjatestneti2p !== 'undefined') {
+            $('a[name=trcninjai2purl]').attr("href", "http://" + trcninjatestneti2p + "/masternodes.html");
+            $('span[name=trcninjai2pdisplay]').show();
+        }
     }
+    else {
+        if (typeof trcninjator !== 'undefined') {
+            $('a[name=trcninjatorurl]').attr("href", "http://" + trcninjator + "/masternodes.html");
+            $('span[name=trcninjatordisplay]').show();
+        }
 
-    if (typeof trcninjai2p !== 'undefined') {
-        $('a[name=trcninjai2purl]').attr("href", "http://" + trcninjai2p + "/masternodes.html");
-        $('span[name=trcninjai2pdisplay]').show();
+        if (typeof trcninjai2p !== 'undefined') {
+            $('a[name=trcninjai2purl]').attr("href", "http://" + trcninjai2p + "/masternodes.html");
+            $('span[name=trcninjai2pdisplay]').show();
+        }
     }
 
     getLatesttrcVersion();
@@ -260,7 +280,8 @@ $(document).ready(function() {
         searching: false,
         dom: "Tfrtp",
         ajax: { url: "/data/nodesstatus-"+trcninjatestnet+".json",
-            dataSrc: 'data.nodes' },
+            dataSrc: 'data.nodes',
+            cache: true },
         "paging": false,
         columns: [
             {data: "NodeName"},
@@ -354,7 +375,8 @@ $(document).ready(function() {
         responsive: true,
         searching: false,
         ajax: { url: "/data/blocksconsensus-"+trcninjatestnet+".json",
-            dataSrc: 'data.blocksconsensus' },
+            dataSrc: 'data.blocksconsensus',
+            cache: true },
         "paging": false,
         "order": [[0, "desc"]],
         columns: [
@@ -401,9 +423,9 @@ $(document).ready(function() {
         ],
         "createdRow": function (row, data, index) {
             if (data.Consensus == 1) {
-                $('td', row).eq(1).css({"background-color": "#a5ddad"});
+                $('td', row).eq(1).removeClass("danger").removeClass("success").addClass("success");
             } else {
-                $('td', row).eq(1).css({"background-color": "#FF8F8F"});
+                $('td', row).eq(1).removeClass("danger").removeClass("success").addClass("danger");
             }
         }
     });
@@ -457,6 +479,7 @@ $(document).ready(function() {
         $('#mnlistLRHR').text( deltaTimeStampHRlong(json.data.cache.time, currenttimestamp())+" ago");
         var versioninfo = 'Unknown';
         var dataVersionCount = [];
+        var dataProtocolCount = [];
         var mnregexp = $('#mnregexp').val();
         for ( var i=0, ien=json.data.masternodes.length ; i<ien ; i++ ) {
             if (parseInt(json.data.masternodes[i].MasternodeProtocol) > trcmaxprotocol) {
@@ -491,6 +514,12 @@ $(document).ready(function() {
             else {
                 dataVersionCount[versioninfo] = 1;
             }
+            if (dataProtocolCount.hasOwnProperty(parseInt(json.data.masternodes[i].MasternodeProtocol))) {
+                dataProtocolCount[parseInt(json.data.masternodes[i].MasternodeProtocol)]++;
+            }
+            else {
+                dataProtocolCount[parseInt(json.data.masternodes[i].MasternodeProtocol)] = 1;
+            }
         }
 
         var dataSet = [];
@@ -508,6 +537,20 @@ $(document).ready(function() {
         $('#mninactive').text( inactiveCount );
         $('#mntotal').text( json.data.masternodes.length );
         $('#uniquemnips').text( uniqueIPs.length );
+        $('#mnlatestprotocol').text( trcmaxprotocol );
+        var ratiolatest = (dataProtocolCount[trcmaxprotocol]/json.data.masternodes.length);
+        var clscolor = "label-danger";
+        if (ratiolatest < 0.5) {
+            clscolor = "label-danger";
+        }
+        else if (ratiolatest < 0.75) {
+            clscolor = "label-warning";
+        }
+        else {
+            clscolor = "label-success";
+        }
+        $('#mnlatestprotocolpercent').text( Math.round((ratiolatest*10000)/100));
+        $('#mnactivelatest').text( dataProtocolCount[trcmaxprotocol] ).removeClass("label-success").removeClass("label-warning").removeClass("label-danger").addClass(clscolor);
 
         if (mnregexp != "") {
             $('#mnlist').DataTable().search(mnregexp, true, false).draw();
@@ -515,11 +558,16 @@ $(document).ready(function() {
     } );
     tableMNList = $('#mnlist').dataTable( {
         ajax: { url: "/data/masternodeslistfull-"+trcninjatestnet+".json",
-                dataSrc: 'data.masternodes' },
+                dataSrc: 'data.masternodes',
+            cache: true },
         lengthMenu: [ [50, 100, 250, 500, -1], [50, 100, 250, 500, "All"] ],
         processing: true,
+        responsive: true,
         pageLength: 50,
         columns: [
+            { data: null, orderable: false, render: function ( data, type, row ) {
+                    return ''
+                } },
             { data: null, render: function ( data, type, row ) {
                 var outtxt = '';
                 if (type != 'sort') {
@@ -527,7 +575,7 @@ $(document).ready(function() {
                         var ix = 0;
                         for ( var i=0, ien=trcninjamndetailvin[trcninjatestnet].length ; i<ien ; i++ ) {
                             if (ix == 0) {
-                                outtxt += '<a href="'+trcninjamndetailvin[trcninjatestnet][0][0].replace('%%a%%',data.MasternodeOutputHash+'-'+data.MasternodeOutputIndex)+'">'+data.MasternodeOutputHash+'-'+data.MasternodeOutputIndex+'</a>';
+                                outtxt += '<a href="'+trcninjamndetailvin[trcninjatestnet][0][0].replace('%%a%%',data.MasternodeOutputHash+'-'+data.MasternodeOutputIndex)+'" data-toggle="tooltip" data-placement="left" title="'+data.MasternodeOutputHash+'-'+data.MasternodeOutputIndex+'">'+data.MasternodeOutputHash.substring(0,8)+'<i class="fa fa-ellipsis-h" aria-hidden="true"></i>\n-'+data.MasternodeOutputIndex+'</a>';
                             }
                             else {
                                 outtxt += '<a href="'+trcninjamndetailvin[trcninjatestnet][i][0].replace('%%a%%',data.MasternodeOutputHash+'-'+data.MasternodeOutputIndex)+'">['+ix+']</a>';
@@ -536,7 +584,7 @@ $(document).ready(function() {
                         }
                         for ( var i=0, ien=trcninjatxexplorer[trcninjatestnet].length ; i<ien ; i++ ) {
                             if (ix == 0) {
-                                outtxt += '<a href="'+trcninjatxexplorer[trcninjatestnet][0][0].replace('%%a%%',data.MasternodeOutputHash)+'">'+data.MasternodeOutputHash+'-'+data.MasternodeOutputIndex+'</a>';
+                                outtxt += '<a href="'+trcninjatxexplorer[trcninjatestnet][0][0].replace('%%a%%',data.MasternodeOutputHash)+'" data-toggle="tooltip" data-placement="left" title="'+data.MasternodeOutputHash+'-'+data.MasternodeOutputIndex+'">'+data.MasternodeOutputHash.substring(0,8)+'...-'+data.MasternodeOutputIndex+'</a>';
                             }
                             else {
                                 outtxt += '<a href="'+trcninjatxexplorer[trcninjatestnet][i][0].replace('%%a%%',data.MasternodeOutputHash)+'">['+ix+']</a>';
@@ -596,6 +644,29 @@ $(document).ready(function() {
                 }
                 return mnip+':'+data.MasternodePort;
             } },
+            { data: null, render: function ( data, type, row) {
+                    var activecount = parseInt(data.ActiveCount);
+                    var inactivecount = parseInt(data.InactiveCount);
+                    var unlistedcount = parseInt(data.UnlistedCount);
+                    var total = activecount+inactivecount+unlistedcount;
+                    var ratio = activecount / total;
+                    var result = ratio;
+                    if (type == 'sort') {
+                        result =  ratio;
+                    } else {
+                        if ( ratio == 1 ) {
+                            result = 'Active';
+                        } else if ( ratio == 0 ) {
+                            result = 'Inactive';
+                        } else if ( unlistedcount > 0 ) {
+                            result = 'Partially Unlisted';
+                        } else {
+                            result = 'Partially Inactive';
+                        }
+                        result += ' ('+Math.round(ratio*100)+'%)';
+                    }
+                    return result;
+                } },
             { data: null, render: function ( data, type, row ) {
                 var txt = "";
                 if (data.Portcheck != false) {
@@ -689,49 +760,39 @@ $(document).ready(function() {
                     return '';
                 }
             } },
-            { data: null, render: function ( data, type, row) {
-                var activecount = parseInt(data.ActiveCount);
-                var inactivecount = parseInt(data.InactiveCount);
-                var unlistedcount = parseInt(data.UnlistedCount);
-                var total = activecount+inactivecount+unlistedcount;
-                var ratio = activecount / total;
-                var result = ratio;
-                if (type == 'sort') {
-                    result =  ratio;
-                } else {
-                    if ( ratio == 1 ) {
-                        result = 'Active';
-                    } else if ( ratio == 0 ) {
-                        result = 'Inactive';
-                    } else if ( unlistedcount > 0 ) {
-                        result = 'Partially Unlisted';
-                    } else {
-                        result = 'Partially Inactive';
-                    }
-                    result += ' ('+Math.round(ratio*100)+'%)';
-                }
-                return result;
-            } },
         ],
         "createdRow": function ( row, data, index ) {
             trcversioncheck = getLatesttrcVersion();
-            var color = '#FF8F8F';
+            var activecount = parseInt(data.ActiveCount);
+            var inactivecount = parseInt(data.InactiveCount);
+            var unlistedcount = parseInt(data.UnlistedCount);
+            var total = activecount+inactivecount+unlistedcount;
+            var ratio = activecount / total;
+            if (ratio == 1) {
+                color = 'success';
+            } else if (ratio == 0) {
+                color = 'danger';
+            } else {
+                color = 'warning';
+            }
+            $('td',row).eq(4).removeClass("danger").removeClass("success").removeClass("warning").addClass(color).css({"text-align": "center"});
+            var color = 'danger';
             if ( data.Portcheck == false ) {
-                color = '#8F8F8F';
+                color = 'warning';
             }
             else {
                 if (( data.Portcheck.Result == 'open' ) || ( data.Portcheck.Result == 'rogue' )) {
-                    color = '#a5ddad';
+                    color = 'success';
                 } else if (data.Portcheck.Result == 'unknown') {
-                    color = '#8F8F8F';
+                    color = 'warning';
                 }
             }
-            $('td',row).eq(3).css({"background-color":color,"text-align": "center"});
-            color = '#a5ddad';
-            if ( data.Balance.Value < 1000 ) {
-                color = '#FF8F8F';
+            $('td',row).eq(5).removeClass("danger").removeClass("success").removeClass("warning").addClass(color).css({"text-align": "center"});
+            color = 'success';
+            if ( data.Balance.Value < 5000 ) {
+                color = 'danger';
             }
-            $('td',row).eq(6).css({"background-color":color,"text-align": "right"});
+            $('td',row).eq(8).removeClass("danger").removeClass("success").addClass(color).css({"text-align": "right"});
             var versioninfo = "Unknown";
             if ((data.Portcheck != false) && data.Portcheck.hasOwnProperty("SubVer")) {
                 var patt = /^\/.*:([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*\/$/;
@@ -744,45 +805,29 @@ $(document).ready(function() {
                 }
             }
             if ( versioninfo == "Unknown" ) {
-                color = '#8F8F8F';
+                color = 'active';
             }
-            else if ( ( versioninfo.substring(0,5) == "0.10." ) || ( versioninfo.substring(0,5) == "0.11." ) || ( versioninfo.substring(0,7) == "0.12.1." ) || ( versioninfo == "0.12.2.3" ) ) {
-                color = '#FF8F8F';
+            else if ( versioninfo.substring(0,8) == "0.12.2.3" ) {
+                color = 'warning';
             }
             else if ( versioninfo == trcversioncheck ) {
-                color = '#a5ddad';
+                color = 'success';
             }
             else {
-                color = '#FFFF8F';
+                color = 'danger';
             }
-            $('td',row).eq(4).css({"background-color":color});
+            $('td',row).eq(6).removeClass("danger").removeClass("success").removeClass("warning").removeClass("active").addClass(color);
             var curprotocol = parseInt(data.MasternodeProtocol);
             if ( curprotocol < trcminprotocol ) {
-                color = '#FF8F8F';
+                color = 'danger';
             }
             else if ( curprotocol == trcmaxprotocol ) {
-                color = '#a5ddad';
+                color = 'success';
             }
             else {
-                color = '#FFFF8F';
+                color = 'warning';
             }
-            $('td',row).eq(5).css({"background-color":color,"text-align": "right"});
-            var total = data.ActiveCount+data.InactiveCount+data.UnlistedCount;
-            var activecount = parseInt(data.ActiveCount);
-            var inactivecount = parseInt(data.InactiveCount);
-            var unlistedcount = parseInt(data.UnlistedCount);
-            var total = activecount+inactivecount+unlistedcount;
-            var ratio = activecount / total;
-            if (ratio == 1) {
-                color = '#a5ddad';
-            } else if (ratio == 0) {
-                color = '#FF8F8F';
-            } else if (ratio < 0.5) {
-                color = '#ffcb8f';
-            } else {
-                color = '#FFFF8F';
-            }
-            $('td',row).eq(10).css({"background-color":color,"text-align": "center"});
+            $('td',row).eq(7).removeClass("danger").removeClass("success").addClass(color).css({"text-align": "right"});
         }
     } );
     var mnlistsize = getParameter("mnlistsize");

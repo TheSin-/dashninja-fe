@@ -48,7 +48,7 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/"><img style="margin-top: -13px; border-top: 0px; border-bottom: 0px; margin-right: 10px;" src="/static/trcninja-logo48x48.png" width="48" height="48" align="left"> TRC Ninja</a>
+            <a class="navbar-brand" href="/"><img style="margin-top: -13px; border-top: 0px; border-bottom: 0px; margin-right: 10px;" src="/static/trcninja-logo48x48.png" width="48" height="48" align="left"> TRC Ninja<span id="testnettitle" style="display: none"> (TESTNET)</a>
         </div>
         <div class="collapse navbar-collapse navbar-collapse" role="navigation">
             <ul class="nav navbar-nav navbar-right">
@@ -88,7 +88,7 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header"><i class="fa fa-server" aria-hidden="true"></i> Masternodes Monitoring <span class="badge badge-secondary">Links: <a href="/masternodes.html"><i class="fa fa-link"></i></a><span name="trcninjatordisplay" style="display: none;"> - <a name="trcninjatorurl" href="#">Tor</a></span><span name="trcninjai2pdisplay" style="display: none;"> - <a name="trcninjai2purl" href="#">I2P</a></span></span> <span class="badge badge-danger" id="testnetalert" class="alert alert-danger" style="display: none">THIS IS TESTNET!</span></h1>
+                <h1 class="page-header"><i class="fa fa-server" aria-hidden="true"></i> Masternodes Monitoring <span class="badge badge-secondary">Links: <a href="/masternodes.html"><i class="fa fa-link"></i></a><span name="trcninjatordisplay" style="display: none;"> - <a name="trcninjatorurl" href="#">Tor</a></span><span name="trcninjai2pdisplay" style="display: none;"> - <a name="trcninjai2purl" href="#">I2P</a></span></span> <span class="badge badge-danger" id="testnetalert" style="display: none">THIS IS TESTNET!</span></h1>
             </div>
         </div>
         <div class="row">
@@ -98,7 +98,7 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
                         TRC Ninja info
                     </div>
                     <div class="panel-body">
-                        Time <span class="label label-info">GMT/UTC</span> / HTML <span class="label label-info">2.5.1</span> / JavaScript <span class="label label-danger" id="trcninjajsversion">required</span>
+                        Time <span class="label label-info">GMT/UTC</span> / HTML <span class="label label-info">2.5.4</span> / JavaScript <span class="label label-danger" id="trcninjajsversion">required</span>
                     </div>
                     <div class="panel-footer">
                         <span class="pull-left"></span>
@@ -155,6 +155,7 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
                         <span class="pull-left">Total:</span><span class="pull-right label label-info" id="mntotal">???</span><br>
                         <span class="pull-left">Inactives:</span><span class="pull-right label label-warning" id="mninactive">???</span><br>
                         <span class="pull-left">Unique IPs:</span><span class="pull-right label label-info" id="uniquemnips">???</span><br><br>
+                        <span class="pull-left"><span id="mnlatestprotocolpercent">??.?</span>% on latest protocol (<span id="mnlatestprotocol">???</span>):</span><span class="pull-right label label-info" id="mnactivelatest">???</span><br><br>
                         An estimated daily payout per masternode version can be seen <a href="/blocks.html#perversion">here</a>.
                     </div>
                     <div class="panel-footer">
@@ -186,7 +187,6 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="panel-heading" id="daemonmonitoring">
                         Daemon monitoring
                     </div>
-                    <div class="panel-body">
             <table id="localnodes" class="table table-striped table-condensed table-responsive nowrap" width="100%">
                 <thead>
                 <tr>
@@ -205,7 +205,6 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
                 </tr>
                 </tbody>
             </table>
-                    </div>
                     <div class="panel-footer">
                         <span class="pull-left">Last data refresh:</span>
                         <span class="pull-right"><span id="localnodesLR">Never</span><br><span id="localnodesLRHR"></span></span>
@@ -219,7 +218,6 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="panel-heading" id="payeeconsensus">
                         Payee Block Template history (Masternode voting consensus)
                     </div>
-                    <div class="panel-body">
             <table id="blockconsensus" class="table table-striped table-condensed table-responsive nowrap" width="100%">
                 <thead>
                 <tr>
@@ -235,7 +233,6 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
                 </tr>
                 </tbody>
             </table>
-                    </div>
                     <div class="panel-footer">
                         <span class="pull-left">Last data refresh:</span>
                         <span class="pull-right"><span id="blockconsensusLR">Never</span><br><span id="blockconsensusLRHR"></span></span>
@@ -245,67 +242,107 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
             </div>
         </div>
         <div class="row">
+            <div id="masternodelistexplain" class="col-lg-12 col-md-12">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Masternodes List explanations :
+                    </div>
+                    <div class="panel-body">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#portchecking" data-toggle="tab">Port Checking</a>
+                            </li>
+                            <li><a href="#pubkeylinks" data-toggle="tab">Pubkey Links</a>
+                            </li>
+                            <li><a href="#status" data-toggle="tab">Status</a>
+                            </li>
+                            <li><a href="#balance" data-toggle="tab">Balance</a>
+                            </li>
+                            <li><a href="#jsonapi" data-toggle="tab">JSON API</a>
+                            </li>
+                        </ul>
 
-            <h2>Masternodes List:</h2>
-            <p><u>Port Checking:</u></p>
-            <ul><li><b>Unknown</b>: New entry that will be checked as soon as possible (usually less than 15min)</li>
-                <li><b>Open</b>: Port was open during last check (time to next check in parenthesis, re-check after 1h)</li>
-                <li><b>Closed</b>: Port was closed during last check (time to next check in parenthesis, re-check after 1h) [Your node can be shown as closed but be working fine, the port scanner can be banned by your node for 24h]</li>
-            </ul>
-            <p><u>Pubkey Links:</u></p>
-            <div id="pubkeyurllist"></div>
-            <p><u>Status:</u></p>
-            <table class="display" border="1">
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div class="tab-pane fade in active" id="portchecking">
+                                <h4>Port Checking:</h4>
+                                <ul><li><b>Unknown</b>: New entry that will be checked as soon as possible (usually less than 15min)</li>
+                                    <li><b>Open</b>: Port was open during last check (time to next check in parenthesis, re-check after 1h)</li>
+                                    <li><b>Closed</b>: Port was closed during last check (time to next check in parenthesis, re-check after 1h) [Your node can be shown as closed but be working fine, the port scanner can be banned by your node for 24h]</li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane fade" id="pubkeylinks">
+                                <h4>Pubkey Links:</h4>
+                                <div id="pubkeyurllist"></div>
+                            </div>
+                            <div class="tab-pane fade" id="status">
+                                <h4>Status:</h4>
+                                <table class="table table-striped table-condensed table-responsive text-nowrap table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Meaning</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="success" style="text-align: center">Active (100%)</td>
+                                        <td>Masternode is listed and has status "1" (masternode list).<br>This is what you want for your masternode.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="danger" style="text-align: center">Inactive (0%)</td>
+                                        <td>Masternode is listed but has status "0" (masternode list)<br/>Possible reasons:<br/><ul><li>Masternode is not responding (port 13333 must be open on your firewall, if you see Closed below, there is your problem)<li>The 5000 TRC were removed from the masternode start wallet<li>The masternode is getting banned (active on some but inactive on others):<br/>Try masternode start with a fresh/new local wallet (don't forget to send your 5000 TRC to that new wallet!!)<br/>This will force a new masternode pubkey (I fixed my tmn01 with that trick)<li>Make sure you have the <a href="https://terracoin.io/#downloads">latest daemon version</a></ul></td>
+                                    </tr>
+                                    <tr>
+                                        <td  class="warning" style="text-align: center">Partially Inactive/Unlisted</td>
+                                        <td>Masternode is not fully active (some, but not all, nodes see it as inactive [with "0" in masternode list] or unlisted [not in masternode list]).<br>The Percentage indicates how many nodes see it as active (the nearer to 100% the better).</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" id="balance">
+                                <h4>Balance:</h4>
+                                <p>This is the balance of the pubkey, if more than 5000 TRC then it has a green background (there can be up to 15min delay with true balance).</p>
+                            </div>
+                            <div class="tab-pane fade" id="jsonapi">
+                                <h4>JSON API:</h4>
+                                <p>An API is available (some documentation can be found <a href="https://www.dash.org/forum/threads/dashninja-pl-dash-masternode-ninja-free-masternode-monitoring.2722/">there</a>) to retrieve the information below.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="panel panel-primary">
+                    <div id="mnlistdetail" class="panel-heading">
+                        Masternodes List:
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <p style="font-weight: bold; text-align: right">Regexp search: <input type="text" class="global_filter" id="mnregexp"></p>
+                    </div>
+                        <table width="100%" id="mnlist" class="table table-striped table-bordered table-condensed table-responsive table-hover text-nowrap">
                 <thead>
                 <tr>
-                    <th>Status</th>
-                    <th>Meaning</th>
+                    <th data-priority="1"></th>
+                    <th data-priority="12">Vin (Hash-Index)</th>
+                    <th data-priority="11">Pubkey</th>
+                    <th data-priority="4">IP:Port</th>
+                    <th data-priority="2">Status<br>(Active Score)</th>
+                    <th data-priority="3">Port Check<br>(Next check)</th>
+                    <th data-priority="5">Version</th>
+                    <th data-priority="6">Protocol</th>
+                    <th data-priority="7">Balance</th>
+                    <th data-priority="8">Last Paid</th>
+                    <th data-priority="9">Active Duration</th>
+                    <th data-priority="10">Last Seen</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td style="background-color:#a5ddad; text-align:center;">Active<br>(100%)</td>
-                    <td>Masternode is listed and has status "1" (masternode list).<br>This is what you want for your masternode.</td>
-                </tr>
-                <tr>
-                    <td style="background-color:#FF8F8F; text-align:center;">Inactive<br>(0%)</td>
-                    <td>Masternode is listed but has status "0" (masternode list)<br/>Possible reasons:<br/><ul><li>Masternode is not responding (port 13333 must be open on your firewall, if you see Closed below, there is your problem)<li>The 5000 TRC were removed from the masternode start wallet<li>The masternode is getting banned (active on some but inactive on others):<br/>Try masternode start with a fresh/new local wallet (don't forget to send your 5000 TRC to that new wallet!!)<br/>This will force a new masternode pubkey (I fixed my dmn01 with that trick)<li>Make sure you have the <a href="https://terracoin.io/#downloads">latest daemon version</a></ul></td>
-                </tr>
-                <tr>
-                    <td style="background-color:#FFFF8F; text-align:center;">Partially Inactive/Unlisted<br>(&gt;=50%)</td>
-                    <td>Masternode is not fully active (some, but not all, nodes see it as inactive [with "0" in masternode list] or unlisted [not in masternode list]).<br>The Percentage indicates how many nodes see it as active (the nearer to 100% the better).</td>
-                </tr>
-                <tr>
-                    <td style="background-color:#ffcb8f; text-align:center;">Partially Inactive/Unlisted<br>(&lt;50%)</td>
-                    <td>Masternode is not fully active (some, but not all, nodes see it as inactive [with "0" in masternode list] or unlisted [not in masternode list]).<br>The Percentage indicates how many nodes see it as active (the nearer to 100% the better).</td>
-                </tr>
-                </tbody>
-            </table>
-            <p><u>Balance:</u><br/>
-                This is the balance of the pubkey, if more than 5000 TRC then it has a green background (there can be up to 15min delay with true balance)</p>
-
-            <p><u>JSON API:</u><br/>
-                An API is available (some documentation can be found <a href="https://www.dash.org/forum/threads/trcninja-pl-dash-masternode-ninja-free-masternode-monitoring.2722/">there</a>) to retrieve the information below.</p>
-            <p id="mnlistdetail" style="font-weight: bold; text-align: right">Regexp search: <input type="text" class="global_filter" id="mnregexp"></p>
-            <table id="mnlist" class="table table-striped table-condensed table-responsive text-nowrap">
-                <thead>
-                <tr>
-                    <th>Vin (Hash-Index)</th>
-                    <th>Pubkey</th>
-                    <th>IP:Port</th>
-                    <th>Port Check (Next check)</th>
-                    <th>Version</th>
-                    <th>Protocol</th>
-                    <th>Balance</th>
-                    <th>Last Paid</th>
-                    <th>Active Duration</th>
-                    <th>Last Seen</th>
-                    <th>Status<br>(Active Score)</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td colspan=11>Please wait while loading... (JavaScript needed)</td>
+                    <td colspan="12">Please wait while loading... (JavaScript needed)</td>
                 </tr>
                 </tbody>
             </table>
@@ -319,6 +356,7 @@ along with TRC Ninja.  If not, see <http://www.gnu.org/licenses/>.
     </div>
 
     <script src="/static/jquery-3.2.1.min.js"></script>
+    <script src="/static/popper.js"></script>
     <script src="/static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <script src="/static/highcharts.js"></script>
     <script src="/static/highcharts-more.js"></script>

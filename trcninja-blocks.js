@@ -20,26 +20,33 @@
 // TRC Ninja Front-End (trcninja-fe) - Blocks (v2)
 // By elberethzone / https://dashtalk.org/members/elbereth.175/
 
-var trcninjaversion = '2.5.1';
+var trcninjaversion = '2.5.9';
 var tableBlocks = null;
 var tablePerVersion = null;
 var tablePerMiner = null;
 var dataProtocolDesc = [];
 var maxProtocol = -1;
-var trcminprotocol = 70208;
+var maxblockversion = -1;
+var maxblockversiondesc = '';
 
 $.fn.dataTable.ext.errMode = 'throw';
 
-if (typeof trcninjatestnet === 'undefined') {
-  var trcninjatestnet = 0;
-}
+var trcninjatestnet = 0;
 if (typeof trcninjatestnethost !== 'undefined') {
   if (window.location.hostname == trcninjatestnethost) {
     trcninjatestnet = 1;
-    $('a[name=menuitemexplorer]').attr("href", "https://"+trcninjatestnetexplorer);
   }
 }
-
+if (typeof trcninjatestnettor !== 'undefined') {
+    if (window.location.hostname == trcninjatestnettor) {
+        trcninjatestnet = 1;
+    }
+}
+if (typeof trcninjatestneti2p !== 'undefined') {
+    if (window.location.hostname == trcninjatestneti2p) {
+        trcninjatestnet = 1;
+    }
+}
 
 if (typeof trcninjacoin === 'undefined') {
   var trcninjacoin = ['',''];
@@ -76,16 +83,26 @@ $(document).ready(function(){
 
   if (trcninjatestnet == 1) {
     $('#testnetalert').show();
-  }
+    $('a[name=menuitemexplorer]').attr("href", "https://" + trcninjatestnetexplorer);
+    if (typeof trcninjatestnettor !== 'undefined') {
+      $('a[name=trcninjatorurl]').attr("href", "http://"+trcninjatestnettor+"/blocks.html");
+      $('span[name=trcninjatordisplay]').show();
+    }
 
-  if (typeof trcninjator !== 'undefined') {
+    if (typeof trcninjatestneti2p !== 'undefined') {
+      $('a[name=trcninjai2purl]').attr("href", "http://" + trcninjatestneti2p + "/blocks.html");
+      $('span[name=trcninjai2pdisplay]').show();
+    }
+  } else {
+    if (typeof trcninjator !== 'undefined') {
       $('a[name=trcninjatorurl]').attr("href", "http://"+trcninjator+"/blocks.html");
       $('span[name=trcninjatordisplay]').show();
-  }
+    }
 
-  if (typeof trcninjai2p !== 'undefined') {
+    if (typeof trcninjai2p !== 'undefined') {
       $('a[name=trcninjai2purl]').attr("href", "http://" + trcninjai2p + "/blocks.html");
       $('span[name=trcninjai2pdisplay]').show();
+    }
   }
 
    tablePerVersion = $('#perversiontable').dataTable( {
@@ -93,7 +110,7 @@ $(document).ready(function(){
         paging: false,
         columns: [
             { data: null, render: function ( data, type, row ) {
-              return data.ProtocolDesc;
+              return data.BlockVersionDesc;
             } },
             { data: null, render: function ( data, type, row ) {
               return data.Blocks;
@@ -132,33 +149,16 @@ $(document).ready(function(){
               } else {
                 return (Math.round( data.RatioBlocksPayedCorrectRatio * 10000 ) / 100).toFixed(2) + '%';
               }
-            } },
-            { data: null, render: function ( data, type, row ) {
-              if ((data.MasternodesPopulation == 0) && (type != 'sort')) {
-                return '<i>Unknown</i>';
-              } else {
-                return data.MasternodesPopulation;
-              }
-            } },
-            { data: null, render: function ( data, type, row ) {
-              if (type == 'sort') {
-                return data.EstimatedMNDailyEarnings;
-              } else {
-                if (data.EstimatedMNDailyEarnings == 0) {
-                  return "<i>Cannot Estimate</i>";
-                } else {
-                  return data.EstimatedMNDailyEarnings.toFixed(6);
-                }
-              }
             } }
         ],
         createdRow: function ( row, data, index ) {
-            $('td',row).eq(1).css({"text-align": "right"});
             $('td',row).eq(2).css({"text-align": "right"});
             $('td',row).eq(3).css({"text-align": "right"});
             $('td',row).eq(4).css({"text-align": "right"});
             $('td',row).eq(5).css({"text-align": "right"});
-            if (data.ProtocolDesc == dataProtocolDesc[maxProtocol]) {
+            console.log(data.BlockVersionDesc+' == '.maxblockversiondesc);
+            if (data.BlockVersionDesc == maxblockversiondesc) {
+              $('td',row).eq(0).css({"background-color": "#8FFF8F"});
               var color = '#a5ddad';
               if (data.RatioBlocksPayedCorrectRatio < 0.25) {
                 color = '#FF8F8F';
@@ -170,10 +170,9 @@ $(document).ready(function(){
               $('td',row).eq(6).css({"text-align": "right", "border": "2px solid red", "background-color": color, "font-weight": "bold"});
             }
             else {
+              $('td',row).eq(0).css({});
               $('td',row).eq(6).css({"text-align": "right"});
             }
-            $('td',row).eq(7).css({"text-align": "right"});
-            $('td',row).eq(8).css({"text-align": "right"});
         }
     } );
 
@@ -312,18 +311,24 @@ $(document).ready(function(){
         $('#globalcurrentmnratio').text( (Math.round( json.data.blocks[0].BlockMNValueRatioExpected * 1000 ) / 10) );
 
         // Fill per version stats table
-        for (var protocol in json.data.stats.perversion){
-          if(!json.data.stats.perversion.hasOwnProperty(protocol)) {continue;}
-          dataProtocolDesc[protocol] = json.data.stats.perversion[protocol].ProtocolDesc;
-          if (protocol > maxProtocol) {
-            maxProtocol = protocol;
+        for (var protocol in json.data.stats.protocoldesc){
+          if(!json.data.stats.protocoldesc.hasOwnProperty(protocol)) {continue;}
+          dataProtocolDesc[protocol] = json.data.stats.protocoldesc[protocol];
+        }
+        maxProtocol = json.data.stats.global.maxprotocol;
+
+        tablePerVersion.api().clear();
+        maxblockversion = -1;
+        for (var blockversion in json.data.stats.perversion){
+          if (blockversion > maxblockversion) {
+              maxblockversion = blockversion;
           }
         }
-        tablePerVersion.api().clear();
-        for (var protocol in json.data.stats.perversion){
-          if(!json.data.stats.perversion.hasOwnProperty(protocol)) {continue;}
-          tablePerVersion.api().row.add( json.data.stats.perversion[protocol] );
-        } 
+        maxblockversiondesc = json.data.stats.perversion[maxblockversion].BlockVersionDesc;
+         for (var blockversion in json.data.stats.perversion){
+           if(!json.data.stats.perversion.hasOwnProperty(blockversion)) {continue;}
+           tablePerVersion.api().row.add( json.data.stats.perversion[blockversion] );
+        }
         tablePerVersion.api().draw();
 
         // Fill per miner stats table
@@ -345,7 +350,8 @@ $(document).ready(function(){
       } );
    tableBlocks = $('#blockstable').dataTable( {
         ajax: { url: "/data/blocks24h-"+trcninjatestnet+".json",
-                dataSrc: 'data.blocks' },
+                dataSrc: 'data.blocks',
+                cache: true },
         lengthMenu: [ [20, 70, 136, 272, -1], ["20 (~1h)", "70 (~3h)", "136 (~6h)", "272 (~12h)", "All (24h)"] ],
         pageLength: 20,
         order: [[ 0, "desc" ]],
@@ -429,7 +435,7 @@ $(document).ready(function(){
             } }
         ],
         createdRow: function ( row, data, index ) {
-            if (data.BlockVersion == 0x20000002) {
+            if (getBaseVersion(data.BlockVersion) == 4) {
                 $('td',row).eq(1).css({"background-color": "#a5ddad"});
             }
             else {
@@ -461,7 +467,7 @@ $(document).ready(function(){
               $('td',row).eq(5).css({"background-color": "#ffcb8f"});
               $('td',row).eq(6).css({"background-color": "#ffcb8f"});
             }
-            if (data.BlockMNProtocol == maxProtocol) {
+            if (data.BlockMNProtocol == trccurprotocol) {
               $('td',row).eq(8).css({"background-color": "#a5ddad"});
             }
             else if (data.BlockMNProtocol < trcminprotocol) {

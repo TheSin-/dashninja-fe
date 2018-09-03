@@ -191,7 +191,7 @@ EOT;
 }
 
 // Function to retrieve the masternode list
-function tmn_masternodes2_get($mysqli, $testnet = 0, $protocol = 0, $mnpubkeys = array(), $mnips = array(), $mnvins = array()) {
+function tmn_masternodes2_get($mysqli, $testnet = 0, $protocol = 0, $mnpubkeys = array(), $mnips = array(), $mnvins = array(), &$cachevalid = false, $usecache = true) {
 
     $sqlprotocol = sprintf("%d",$protocol);
     $sqltestnet = sprintf("%d",$testnet);
@@ -199,7 +199,7 @@ function tmn_masternodes2_get($mysqli, $testnet = 0, $protocol = 0, $mnpubkeys =
     $cacheserial = sha1(serialize($mnpubkeys).serialize($mnips).serialize($mnvins));
     $cachefnam = CACHEFOLDER.sprintf("trcninja_masternodes2_get_%d_%d_%d_%d_%d_%s",$testnet,$protocol,count($mnpubkeys),count($mnips),count($mnvins),$cacheserial);
     $cachefnamupdate = $cachefnam.".update";
-    $cachevalid = (is_readable($cachefnam) && (((filemtime($cachefnam)+300)>=time()) || file_exists($cachefnamupdate)));
+    $cachevalid = $usecache && (is_readable($cachefnam) && (((filemtime($cachefnam)+300)>=time()) || file_exists($cachefnamupdate)));
     if ($cachevalid) {
         $nodes = unserialize(file_get_contents($cachefnam));
     }
@@ -248,33 +248,6 @@ function tmn_masternodes2_get($mysqli, $testnet = 0, $protocol = 0, $mnpubkeys =
         }
 
         $sql = <<<EOT
-DROP TABLE IF EXISTS _node_status;
-CREATE TEMPORARY TABLE IF NOT EXISTS
-    _node_status ENGINE=MEMORY AS (
-    SELECT
-        ciml.MasternodeOutputHash,
-        ciml.MasternodeOutputIndex,
-        ciml.MasternodeStatus,
-        ciml.MasternodeTestNet,
-        SUM(CASE
-            WHEN MasternodeStatus = 'active' THEN 1
-            WHEN MasternodeStatus = 'current' THEN 1
-            ELSE NULL END) AS ActiveCount,
-        SUM(CASE
-            WHEN MasternodeStatus = 'inactive' THEN 1
-            ELSE NULL END) AS InactiveCount,
-        SUM(CASE
-            WHEN MasternodeStatus = 'unlisted' THEN 1
-            ELSE NULL END) AS UnlistedCount
-    FROM
-        cmd_info_masternode2_list ciml, cmd_nodes_status cns
-    WHERE
-        ciml.NodeID = cns.NodeID AND
-        ciml.MasternodeTestNet = $sqltestnet AND
-        cns.NodeProtocol = $sqlprotocol
-    GROUP BY
-        ciml.MasternodeOutputHash, ciml.MasternodeOutputIndex, ciml.MasternodeTestNet
-    );
 SELECT
     cim.MasternodeOutputHash MasternodeOutputHash,
     cim.MasternodeOutputIndex MasternodeOutputIndex,
@@ -282,7 +255,7 @@ SELECT
     cim.MasternodeTor MasternodeTor,
     cim.MasternodePort MasternodePort,
     cim.MasternodePubkey MasternodePubkey,
-    MasternodeProtocol,
+    cim.MasternodeProtocol MasternodeProtocol,
     MasternodeLastSeen,
     MasternodeActiveSeconds,
     MasternodeLastPaid,
@@ -294,7 +267,7 @@ SELECT
     cib.BlockMNValue MasternodeLastPaidBlockAmount
 FROM
     (cmd_info_masternode2 cim,
-    _node_status)
+    cmd_info_masternode_active cima)
     LEFT JOIN
         cmd_info_masternode_lastpaid cimlp
             ON (cimlp.MNTestNet = cim.MasternodeTestNet AND cimlp.MNPubKey = cim.MasternodePubkey)
@@ -302,20 +275,18 @@ FROM
         cmd_info_blocks cib
             ON (cib.BlockTestNet = cimlp.MNTestNet AND cib.BlockId = cimlp.MNLastPaidBlock)
 WHERE
-    cim.MasternodeOutputHash = _node_status.MasternodeOutputHash AND
-    cim.MasternodeOutputIndex = _node_status.MasternodeOutputIndex AND
-    cim.MasternodeTestNet = _node_status.MasternodeTestNet AND
+    cim.MasternodeOutputHash = cima.MasternodeOutputHash AND
+    cim.MasternodeOutputIndex = cima.MasternodeOutputIndex AND
+    cim.MasternodeTestNet = cima.MasternodeTestNet AND
     cim.MasternodeTestNet = $sqltestnet AND
+    cima.MasternodeProtocol = $sqlprotocol AND
     ((ActiveCount > 0) OR (InactiveCount > 0))$sqlpks$sqlips$sqlvins
 ORDER BY MasternodeOutputHash, MasternodeOutputIndex;
 EOT;
 
         // Execute the query
         $numnodes = 0;
-        if ($mysqli->multi_query($sql)) {
-            if ($mysqli->more_results() && $mysqli->next_result()) {
-                if ($mysqli->more_results() && $mysqli->next_result()) {
-                    if ($result = $mysqli->store_result()) {
+                    if ($result = $mysqli->query($sql)) {
                         $nodes = array();
                         while($row = $result->fetch_assoc()){
                             $numnodes++;
@@ -355,18 +326,6 @@ EOT;
                     else {
                         $nodes = false;
                     }
-                }
-                else {
-                    $nodes = false;
-                }
-            }
-            else {
-                $nodes = false;
-            }
-        }
-        else {
-            $nodes = false;
-        }
         if ($nodes !== false) {
             file_put_contents($cachefnam . ".new", serialize($nodes), LOCK_EX);
             rename($cachefnam . ".new", $cachefnam);
@@ -470,13 +429,13 @@ function tmn_masternodes_votes_get($mysqli, $mnips = array(), $testnet) {
 }
 
 // Function to retrieve the portcheck info
-function tmn_masternodes_portcheck_get($mysqli, $mnkeys, $testnet = 0) {
+function tmn_masternodes_portcheck_get($mysqli, $mnkeys, $testnet = 0, &$cachevalid = false, $usecache = true) {
 
 //    $cacheserial = sha1(serialize($mnkeys));
 //    $cachefnam = CACHEFOLDER.sprintf("trcninja_masternodes_portcheck_get_%d_%d_%s",$testnet,count($mnkeys),$cacheserial);
     $cachefnam = CACHEFOLDER.sprintf("trcninja_masternodes_portcheck_get_%d",$testnet);
     $cachefnamupdate = $cachefnam.".update";
-    $cachevalid = (is_readable($cachefnam) && (((filemtime($cachefnam)+300)>=time()) || file_exists($cachefnamupdate)));
+    $cachevalid = $usecache && (is_readable($cachefnam) && (((filemtime($cachefnam)+300)>=time()) || file_exists($cachefnamupdate)));
     if ($cachevalid) {
         $portcheck = unserialize(file_get_contents($cachefnam));
     }
@@ -611,7 +570,7 @@ function tmn_masternodes_donations_get($mysqli, $testnet = 0) {
 }
 
 // Function to retrieve the balance info
-function tmn_masternodes_balance_get($mysqli, $mnkeys, $testnet = 0) {
+function tmn_masternodes_balance_get($mysqli, $mnkeys, $testnet = 0, &$cachevalid = false, $usecache = true) {
 
     // Only add a selection is there is less than 100 keys, it will just make the query slower and not use the cache otherwise
     if (count($mnkeys) > 100) {
@@ -619,7 +578,7 @@ function tmn_masternodes_balance_get($mysqli, $mnkeys, $testnet = 0) {
     }
     $cacheserial = sha1(serialize($mnkeys));
     $cachefnam = CACHEFOLDER.sprintf("trcninja_masternodes_balance_get_%d_%d_%s",$testnet,count($mnkeys),$cacheserial);
-    $cachevalid = (is_readable($cachefnam) && ((filemtime($cachefnam)+300)>=time()));
+    $cachevalid = $usecache && (is_readable($cachefnam) && ((filemtime($cachefnam)+300)>=time()));
     if ($cachevalid) {
         $balances = unserialize(file_get_contents($cachefnam));
     }
@@ -670,7 +629,7 @@ function tmn_masternodes_exstatus_get($mysqli, $mnkeys, $testnet = 0) {
     }
     else {
         // Retrieve the extended status info for the specific pubkey
-        $sql = sprintf("SELECT MasternodeOutputHash, MasternodeOutputIndex, NodeName, NodeVersion, NodeProtocol, MasternodeStatus, MasternodeStatusEx FROM cmd_info_masternode2_list cim2l LEFT OUTER JOIN cmd_nodes cn ON cn.NodeID = cim2l.NodeID LEFT OUTER JOIN cmd_nodes_status cns ON cn.NodeID = cns.NodeID WHERE MasternodeTestNet = %d AND cn.NodeEnabled = 1",$testnet);
+        $sql = sprintf("SELECT MasternodeOutputHash, MasternodeOutputIndex, NodeName, NodeVersion, NodeProtocol, MasternodeStatus, MasternodeStatusEx FROM cmd_info_masternode2_list cim2l LEFT OUTER JOIN cmd_nodes cn ON cn.NodeID = cim2l.NodeID LEFT OUTER JOIN cmd_nodes_status cns ON cn.NodeID = cns.NodeID WHERE MasternodeTestNet = %d AND cn.NodeEnabled = 1 AND cn.NodeType <> 'p2pool'",$testnet);
         // Add the filtering to masternode output hash and index (in $mnkeys parameter)
         if (count($mnkeys) > 0) {
             $sql .= " AND (";
@@ -711,77 +670,60 @@ function tmn_masternodes_exstatus_get($mysqli, $mnkeys, $testnet = 0) {
 // Function to retrieve the masternode count
 function tmn_masternodes_count($mysqli, $testnet, &$totalmncount, &$uniquemnips) {
 
-    $cachefnam = CACHEFOLDER.sprintf("trcninja_masternodes_count_%d",$testnet);
+    $cachefnam = CACHEFOLDER.sprintf("trcninja_protocols_%d",$testnet);
     $cachevalid = (is_readable($cachefnam) && ((filemtime($cachefnam)+300)>=time()));
+    $protocols = array();
     if ($cachevalid) {
-        $tmp = unserialize(file_get_contents($cachefnam));
-        $mninfo = $tmp["mninfo"];
-        $uniquemnips = $tmp["uniquemnips"];
-        $totalmncount = $tmp["totalmncount"];
+        $protocols = unserialize(file_get_contents($cachefnam));
     }
     else {
-        // Retrieve the total unique IPs per protocol version
-        /*    $sqlmnnum1 = sprintf("(SELECT first.Protocol Protocol, COUNT(1) UniqueActiveMasternodesIPs FROM "
-                               ."(SELECT ciml.MasternodeIP MNIP, ciml.MasternodePort MNPort, cns.NodeProtocol Protocol, COUNT(1) ActiveCount FROM cmd_info_masternode_list ciml, cmd_nodes_status cns, cmd_nodes cmn WHERE"
-                               ." ciml.NodeID = cns.NodeID AND ciml.NodeID = cmn.NodeID AND cmn.NodeEnabled = 1 AND ciml.MNTestNet = %d"
-                               ." AND cns.NodeProcessStatus = 'running' AND (ciml.MasternodeStatus = 'active' OR ciml.MasternodeStatus = 'current')"
-                               ." GROUP BY ciml.MasternodeIP, ciml.MasternodePort, cns.NodeProtocol) first GROUP BY first.Protocol) a",$testnet);
-        */
+        $sqlprotocols = sprintf("SELECT NodeProtocol FROM cmd_nodes cn, cmd_nodes_status cns WHERE cn.NodeId = cns.NodeId AND NodeTestnet = %d GROUP BY NodeProtocol",$testnet);
+        // Run the query
+        $result = $mysqli->query($sqlprotocols);
+        while ($row = $result->fetch_assoc()) {
+            $protocols[] = intval($row['NodeProtocol']);
+        }
+        file_put_contents($cachefnam,serialize($protocols),LOCK_EX);
+    }
+    $maxprotocol = 0;
+    $mninfo = array();
 
-        $sqlmnnum1 = sprintf("(SELECT first.Protocol Protocol, COUNT(1) UniqueActiveMasternodesIPs FROM "
-            ."(SELECT cim.MasternodeIP MNIP, cim.MasternodePort MNPort, cim.MasternodeProtocol Protocol, COUNT(1) ActiveCount"
-            ." FROM cmd_info_masternode2_list ciml, cmd_nodes_status cns, cmd_nodes cmn, cmd_info_masternode2 cim WHERE"
-            ." ciml.MasternodeOutputHash = cim.MasternodeOutputHash AND ciml.MasternodeOutputIndex = cim.MasternodeOutputIndex AND "
-            ." cns.NodeID AND ciml.NodeID = cmn.NodeID AND cmn.NodeEnabled = 1 AND ciml.MasternodeTestNet = %d AND "
-            ." ciml.NodeID = cns.NodeID AND ciml.NodeID = cmn.NodeID AND cmn.NodeEnabled = 1"
-            ." AND cns.NodeProcessStatus = 'running' AND (ciml.MasternodeStatus = 'active' OR ciml.MasternodeStatus = 'current')"
-            ." GROUP BY cim.MasternodeIP, cim.MasternodePort, cim.MasternodeProtocol) first GROUP BY first.Protocol) a",$testnet);
+    foreach ($protocols as $protocol) {
+        $mninfo[$protocol] = array("ActiveMasternodesUniqueIPs" => array(),
+            "ActiveMasternodesCount" => 0);
+        if ($protocol > $maxprotocol) {
+            $maxprotocol = $protocol;
+        }
+    }
 
+    $uniquemnips = 0;
+    $totalmncount = 0;
 
-        // Retrieve the total masternodes per protocol version
-        /*    $sqlmnnum2 = sprintf("(SELECT second.Protocol Protocol, COUNT(1) ActiveMasternodesCount FROM "
-                               ."(SELECT ciml.MasternodeIP MNIP, ciml.MasternodePort MNPort, cimpk.MNPubKey MNPubkey, cns.NodeProtocol Protocol, COUNT(1) ActiveCount FROM cmd_info_masternode_list ciml,"
-                               ." cmd_info_masternode_pubkeys cimpk, cmd_nodes_status cns, cmd_nodes cmn WHERE"
-                               ." ciml.MasternodeIP = cimpk.MasternodeIP AND ciml.MasternodePort = cimpk.MasternodePort AND ciml.MNTestNet = cimpk.MNTestNet AND cimpk.MNLastReported = 1 AND"
-                               ." ciml.NodeID = cns.NodeID AND ciml.NodeID = cmn.NodeID AND cmn.NodeEnabled = 1 AND ciml.MNTestNet = %d AND cns.NodeProcessStatus = 'running' AND"
-                               ." (ciml.MasternodeStatus = 'active' OR ciml.MasternodeStatus = 'current')"
-                               ." GROUP BY ciml.MasternodeIP, ciml.MasternodePort, cimpk.MNPubKey, cns.NodeProtocol) second GROUP BY second.Protocol) b",$testnet);
-        */
-        $sqlmnnum2 = sprintf("(SELECT second.Protocol Protocol, COUNT(1) ActiveMasternodesCount FROM "
-            ."(SELECT cim.MasternodeIP MNIP, cim.MasternodePort MNPort, cim.MasternodeOutputHash MNOutHash, cim.MasternodeOutputIndex MNOutIndex,"
-            ." cim.MasternodeProtocol Protocol, COUNT(1) ActiveCount FROM cmd_info_masternode2_list ciml,"
-            ." cmd_info_masternode2 cim, cmd_nodes_status cns, cmd_nodes cmn WHERE"
-            ." ciml.MasternodeOutputHash = cim.MasternodeOutputHash AND ciml.MasternodeOutputIndex = cim.MasternodeOutputIndex AND ciml.MasternodeTestNet = cim.MasternodeTestNet AND"
-            ." ciml.NodeID = cns.NodeID AND ciml.NodeID = cmn.NodeID AND cmn.NodeEnabled = 1 AND ciml.MasternodeTestNet = %d AND cns.NodeProcessStatus = 'running' AND"
-            ." (ciml.MasternodeStatus = 'active' OR ciml.MasternodeStatus = 'current')"
-            ." GROUP BY cim.MasternodeIP, cim.MasternodePort, cim.MasternodeOutputHash, cim.MasternodeOutputIndex, cim.MasternodeProtocol) second GROUP BY second.Protocol) b",$testnet);
+    foreach ($protocols as $protocol) {
+        $fulllist = tmn_masternodes2_get($mysqli, $testnet, $protocol);
 
-        $sqlmnnum = "SELECT a.Protocol, a.UniqueActiveMasternodesIPs UniqueActiveMasternodesIPs, b.ActiveMasternodesCount ActiveMasternodesCount FROM $sqlmnnum1, $sqlmnnum2 WHERE a.Protocol = b.Protocol";
+        $mninfo[$protocol]["ActiveMasternodesCount"] = 0;
 
-        $totalmncount = 0;
-//    $totalmncount = $sqlmnnum;
-        $uniquemnips = 0;
-        // Run the queries
-        if ($result = $mysqli->query($sqlmnnum)) {
-            $mninfo = array();
-            $curprotocol = 0;
-            // Group the result by masternode ip:port (status is per protocolversion and nodename)
-            while($row = $result->fetch_assoc()){
-                $mninfo[$row['Protocol']] = array("UniqueActiveMasternodesIPs" => $row['UniqueActiveMasternodesIPs'],
-                    "ActiveMasternodesCount" => $row['ActiveMasternodesCount']);
-                if ($curprotocol < $row['Protocol']) {
-                    $curprotocol = $row['Protocol'];
+        foreach ($fulllist as $masternode) {
+            if ($masternode["ActiveCount"] > 0) {
+                if (!in_array($masternode["MasternodeIP"], $mninfo[$protocol]["ActiveMasternodesUniqueIPs"])) {
+                    $mninfo[$protocol]["ActiveMasternodesUniqueIPs"][] = $masternode["MasternodeIP"];
                 }
-                $uniquemnips += $row['UniqueActiveMasternodesIPs'];
-                $totalmncount += $row['ActiveMasternodesCount'];
+                $mninfo[$protocol]["ActiveMasternodesCount"]++;
             }
         }
-        else {
-            $mninfo = false;
+        if ($protocol == $maxprotocol) {
+            $totalmncount = $mninfo[$protocol]["ActiveMasternodesCount"];
         }
-        $tmp = array("mninfo" => $mninfo, "uniquemnips" => $uniquemnips, "totalmncount" => $totalmncount);
-        file_put_contents($cachefnam,serialize($tmp),LOCK_EX);
     }
+    foreach ($mninfo as $protocol => $mn) {
+        $mninfo[$protocol]["ActiveMasternodesUniqueIPs"] = count($mninfo[$protocol]["ActiveMasternodesUniqueIPs"]);
+    }
+
+    $uniquemnips = $mninfo[$maxprotocol]["ActiveMasternodesUniqueIPs"];
+
+    $tmp = array("mninfo" => $mninfo, "uniquemnips" => $uniquemnips, "totalmncount" => $totalmncount);
+//    file_put_contents($cachefnam,serialize($tmp),LOCK_EX);
 
     return $mninfo;
 

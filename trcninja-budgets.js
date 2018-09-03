@@ -20,7 +20,7 @@
 // TRC Ninja Front-End (trcninja-fe) - Budgets
 // By elberethzone / https://dashtalk.org/members/elbereth.175/
 
-var trcninjaversion = '1.5.1';
+var trcninjaversion = '1.5.2';
 var tableBudgets = null;
 var tableBudgetsProjection = null;
 var tableSuperBlocks = null;
@@ -36,13 +36,21 @@ var arrayMonthlyPayments = [];
 
 $.fn.dataTable.ext.errMode = 'throw';
 
-if (typeof trcninjatestnet === 'undefined') {
-    var trcninjatestnet = 0;
-}
+var trcninjatestnet = 0;
+
 if (typeof trcninjatestnethost !== 'undefined') {
     if (window.location.hostname == trcninjatestnethost) {
         trcninjatestnet = 1;
-        $('a[name=menuitemexplorer]').attr("href", "https://"+trcninjatestnetexplorer);
+    }
+}
+if (typeof trcninjatestnettor !== 'undefined') {
+    if (window.location.hostname == trcninjatestnettor) {
+        trcninjatestnet = 1;
+    }
+}
+if (typeof trcninjatestneti2p !== 'undefined') {
+    if (window.location.hostname == trcninjatestneti2p) {
+        trcninjatestnet = 1;
     }
 }
 
@@ -100,6 +108,7 @@ $(document).ready(function(){
 
     if (trcninjatestnet == 1) {
         $('#testnetalert').show();
+        $('a[name=menuitemexplorer]').attr("href", "https://"+trcninjatestnetexplorer);
     }
 
     $('#budgetsdetailtable').on('xhr.dt', function ( e, settings, json ) {
