@@ -411,7 +411,7 @@ $app->get('/api/blocks', function() use ($app,&$mysqli) {
             $correctpayment = false;
           }
           //if ($block['BlockMNProtocol'] == $maxprotocol) {
-          if ($block['BlockVersion'] == 0x20000004) {
+          if ($block['BlockVersion'] == 0x320104) {
             $perminer[$minerkey]['BlocksPayedToCurrentProtocol'] += $block['BlockMNPayed'];
             if ($correctpayment) {
               $perminer[$minerkey]['BlocksPayedCorrectly']++;

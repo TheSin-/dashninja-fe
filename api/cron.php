@@ -470,7 +470,7 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
                 $correctpayment = false;
             }
             //if ($block['BlockMNProtocol'] == $maxprotocol) {
-            if ($block['BlockVersion'] == 0x20000004) {
+            if ($block['BlockVersion'] == 0x320104) {
                 $perminer[$minerkey]['BlocksPayedToCurrentProtocol'] += $block['BlockMNPayed'];
                 if ($correctpayment) {
                     $perminer[$minerkey]['BlocksPayedCorrectly']++;
