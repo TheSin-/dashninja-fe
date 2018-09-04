@@ -458,15 +458,15 @@ function generate_blocks24h_json_files($mysqli, $testnet = 0) {
                         'MasternodesUniqueIPs' => $mnuniqueips,
                         'EstimatedMNDailyEarnings' => 0.0);
             }
-            $perversion[$block['BlockProtocol']]['Blocks']++;
-            $perversion[$block['BlockProtocol']]['Amount'] += $block['BlockMNValue'];
-            $perversion[$block['BlockProtocol']]['BlocksPayed'] += $block['BlockMNPayed'];
+            $perversion[$block['BlockVersion']]['Blocks']++;
+            $perversion[$block['BlockVersion']]['Amount'] += $block['BlockMNValue'];
+            $perversion[$block['BlockVersion']]['BlocksPayed'] += $block['BlockMNPayed'];
             if (round($block['BlockMNValueRatio'],3) == round($block['BlockMNValueRatioExpected'],3)) {
-                $perversion[$block['BlockProtocol']]['BlocksPayedCorrectRatio']++;
+                $perversion[$block['BlockVersion']]['BlocksPayedCorrectRatio']++;
                 $correctpayment = true;
             }
             elseif ($block['BlockMNValueRatio'] > 0) {
-                $perversion[$block['BlockProtocol']]['BlocksPayedIncorrectRatio']++;
+                $perversion[$block['BlockVersion']]['BlocksPayedIncorrectRatio']++;
                 $correctpayment = false;
             }
             //if ($block['BlockMNProtocol'] == $maxprotocol) {
