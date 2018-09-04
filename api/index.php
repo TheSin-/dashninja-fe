@@ -2915,8 +2915,8 @@ $app->get('/api/masternodes/stats', function() use ($app,&$mysqli) {
       while($row = $result->fetch_assoc()){
         $supplyinfo[$row['Protocol']] = array("TotalMNValue" => floatval($row['TotalMNValue']),
                                               "TotalSupply" => floatval($row['TotalSupply']),
-                                              "TotalMNPayed" => floatval($row['TotalMNPayed']),
-                                              "TotalBlocks" => floatval($row['TotalBlocks']),
+                                              "TotalMNPayed" => intval($row['TotalMNPayed']),
+                                              "TotalBlocks" => intval($row['TotalBlocks']),
                                               "RatioPayed" => 0);
         $totalsupplyinfo['TotalMNValue'] += $row['TotalMNValue'];
         $totalsupplyinfo['TotalSupply'] += $row['TotalSupply'];
