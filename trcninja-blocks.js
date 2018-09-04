@@ -28,6 +28,8 @@ var dataProtocolDesc = [];
 var maxProtocol = -1;
 var maxblockversion = -1;
 var maxblockversiondesc = '';
+var trccurprotocol = 70208;
+var trcminprotocol = 70208;
 
 $.fn.dataTable.ext.errMode = 'throw';
 
