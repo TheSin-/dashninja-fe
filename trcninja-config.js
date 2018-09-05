@@ -25,9 +25,9 @@ var trcninjatestnetexplorer = 'test-ninja.terracoin.io';
 
 // Tor onion hostname
 var trcninjator = 'hv5iyk4wg5sreieq.onion';
-var trcninjatestnettor = '';
-var trcninjai2p = '';
-var trcninjatestneti2p = '';
+//var trcninjatestnettor = '';
+//var trcninjai2p = '';
+//var trcninjatestneti2p = '';
 
 // Coin logos
 var trcninjacoin = ['TRC','tTRC'];
