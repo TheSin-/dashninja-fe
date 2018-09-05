@@ -153,8 +153,8 @@ $app->get('/api/blocks', function() use ($app,&$mysqli) {
     }
     else {
       foreach ($mnpubkeys as $mnpubkey) {
-        if ( ( ($testnet == 1) && ! ( (substr($mnpubkey,0,1) == 'm') || (substr($mnpubkey,0,1) == 'n') ) )
-          || ( ($testnet == 0) && ! ( (substr($mnpubkey,0,1) == '1') ) )
+        if ( ( ($testnet == 1) && ! ( (substr($mnpubkey,0,1) == 'm') || (substr($mnpubkey,0,1) == 'n') || (substr($mnpubkey,0,1) == '2') ) )
+          || ( ($testnet == 0) && ! ( (substr($mnpubkey,0,1) == '1') || (substr($mnpubkey,0,1) == '3')) )
           || ( strlen($mnpubkey) != 34 ) ) {
           $errmsg[] = "Parameter pubkeys: Entry $mnpubkey: Incorrect pubkey format.";
         }
@@ -2382,8 +2382,8 @@ $app->get('/api/masternodes', function() use ($app,&$mysqli) {
     }
     else {
       foreach ($mnpubkeys as $mnpubkey) {
-        if ( ( ($testnet == 1) && ! ( (substr($mnpubkey,0,1) == 'm') || (substr($mnpubkey,0,1) == 'n') ) )
-          || ( ($testnet == 0) && ! ( (substr($mnpubkey,0,1) == '1') ) )
+        if ( ( ($testnet == 1) && ! ( (substr($mnpubkey,0,1) == 'm') || (substr($mnpubkey,0,1) == 'n') || (substr($mnpubkey,0,1) == '2') ) )
+          || ( ($testnet == 0) && ! ( (substr($mnpubkey,0,1) == '1') || (substr($mnpubkey,0,1) == '3') ) )
           || ( strlen($mnpubkey) != 34 ) ) {
           $errmsg[] = "Parameter pubkeys: Entry $mnpubkey: Incorrect pubkey format.";
         }
