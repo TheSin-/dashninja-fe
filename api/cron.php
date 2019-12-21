@@ -37,7 +37,7 @@ function xecho($line) {
 
 // Die but delete semaphore file before
 function die2($retcode,$semaphorefile) {
-    unlink($semaphorefile);
+    @unlink($semaphorefile);
     die($retcode);
 }
 
