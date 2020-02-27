@@ -459,6 +459,8 @@ a:focus, a:hover {
 .panel-primary>.panel-heading {
     background-color: #0e8843;
     border-color: #1e6638;
+    border-top-left-radius: initial;
+    border-top-right-radius: initial;
 }
 
 .label-primary {
