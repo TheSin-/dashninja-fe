@@ -25,6 +25,7 @@ var tableLocalNodes = null;
 var tableBlockConsensus = null;
 var tableMNList = null;
 var chartMNVersions = null;
+var trcversionmin = "0.12.2.4";
 var trcversiondefault = "0.12.2.5";
 var trcversion = trcversiondefault;
 var trcversioncheck = trcversion;
@@ -810,7 +811,8 @@ $(document).ready(function() {
             else if ( versioninfo.substring(0,8) == "0.12.2.3" ) {
                 color = 'warning';
             }
-            else if ( versioninfo == trcversioncheck ) {
+            // This will break once major is > 0
+            else if ( parseInt(versioninfo.replace(/\./g, '')) >= parseInt(trcversionmin.replace(/\./g, '')) ) {
                 color = 'success';
             }
             else {
