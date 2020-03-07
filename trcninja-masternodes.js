@@ -806,7 +806,7 @@ $(document).ready(function() {
                 }
             }
             if ( versioninfo == "Unknown" ) {
-                color = 'active';
+                color = 'warning';
             }
             else if ( versioninfo == trcversioncheck ) {
                 color = 'success';
