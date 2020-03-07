@@ -808,12 +808,12 @@ $(document).ready(function() {
             if ( versioninfo == "Unknown" ) {
                 color = 'active';
             }
-            else if ( versioninfo.substring(0,8) == "0.12.2.3" ) {
-                color = 'warning';
+            else if ( versioninfo == trcversioncheck ) {
+                color = 'success';
             }
             // This will break once major is > 0
             else if ( parseInt(versioninfo.replace(/\./g, '')) >= parseInt(trcversionmin.replace(/\./g, '')) ) {
-                color = 'success';
+                color = 'warning';
             }
             else {
                 color = 'danger';
